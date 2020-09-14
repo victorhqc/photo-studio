@@ -1,0 +1,12 @@
+# General ignore files
+
+.env
+*.db
+
+# Rust ignore files
+
+target
+
+# Node.js ignore files
+
+node_modules
