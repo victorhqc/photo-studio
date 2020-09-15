@@ -1,4 +1,4 @@
-#[cfg(target_family = "linux")]
+#[cfg(target_os = "linux")]
 extern crate openssl;
 
 #[macro_use]
@@ -11,4 +11,4 @@ pub mod conduit;
 pub mod connection;
 pub mod helpers;
 pub mod models;
-mod schema;
+pub mod schema;

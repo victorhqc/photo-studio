@@ -1,4 +1,4 @@
-use crate::connection::DbPool;
+use crate::connection::Conn;
 use crate::helpers::uuid::Uuid;
 use crate::models::User;
 use chrono::Utc;
@@ -17,18 +17,16 @@ impl User {
     }
   }
 
-  pub fn insert(&self, pool: &DbPool) -> Result<User> {
-    let conn = pool.get().context(GetConnection)?;
-
+  pub fn insert(&self, conn: &Conn) -> Result<User> {
     let user: User = {
       use crate::schema::users::dsl::*;
 
       diesel::insert_into(users)
         .values(self)
-        .execute(&conn)
+        .execute(conn)
         .context(Query)?;
 
-      users.order(created_at.desc()).first(&conn).context(Query)?
+      users.order(created_at.desc()).first(conn).context(Query)?
     };
 
     Ok(user)

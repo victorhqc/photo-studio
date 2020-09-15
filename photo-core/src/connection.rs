@@ -45,10 +45,7 @@ impl diesel::r2d2::CustomizeConnection<SqliteConnection, diesel::r2d2::Error>
 }
 
 pub fn db_pool(url: Option<String>) -> Result<DbPool, DbError> {
-  let database_url = match url {
-    Some(u) => format!("{}", u),
-    None => env::var("DATABASE_URL").unwrap_or_else(|_| "./photos.db".to_string()),
-  };
+  let database_url = get_database_url(url);
   let manager = ConnectionManager::<SqliteConnection>::new(database_url);
 
   let pool = Pool::builder().build(manager).context(BuildPool)?;
@@ -57,15 +54,19 @@ pub fn db_pool(url: Option<String>) -> Result<DbPool, DbError> {
 }
 
 pub fn connect(url: Option<String>) -> Result<Conn, DbError> {
-  let database_url = match url {
-    Some(u) => format!("{}", u),
-    None => env::var("DATABASE_URL").unwrap_or_else(|_| "./photos.db".to_string()),
-  };
+  let database_url = get_database_url(url);
 
   let conn = SqliteConnection::establish(&database_url)
     .expect(&format!("Error connecting to {}", database_url));
 
   Ok(conn)
+}
+
+pub fn get_database_url(url: Option<String>) -> String {
+  match url {
+    Some(u) => format!("{}", u),
+    None => env::var("DATABASE_URL").unwrap_or_else(|_| "./photos.db".to_string()),
+  }
 }
 
 pub fn db_migrate(conn: &Conn) -> Result<(), DbError> {

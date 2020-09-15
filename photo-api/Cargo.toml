@@ -7,9 +7,10 @@ edition = "2018"
 [dependencies]
 diesel = { version = "1.4.5", features = ["sqlite", "r2d2", "chrono", "extras"] }
 dotenv = "0.15"
+failure = "0.1.8"
 futures = "0.3.5"
-gotham = "0.5"
-gotham_derive = "0.5"
+gotham =  { git = "https://github.com/gotham-rs/gotham.git", tag = "gotham-0.5.0" }
+gotham_derive =  { git = "https://github.com/gotham-rs/gotham.git", tag = "gotham-0.5.0" }
 gotham_middleware_diesel = { git = "https://github.com/gotham-rs/gotham.git", tag = "gotham-0.5.0" }
 gotham_middleware_jwt = { git = "https://github.com/gotham-rs/gotham.git", tag = "gotham-0.5.0" }
 http = "0.2.1"
@@ -18,9 +19,12 @@ jsonwebtoken = "7.2"
 log = "0.4"
 pretty_env_logger = "0.4"
 mime = "0.3.16"
-oauth2 = "3.0.0"
+oauth2 = { version = "3.0.0", features = ["reqwest-010"] }
+photo-core = { path = "../photo-core" }
+snafu = "0.6"
 r2d2 = "0.8"
-reqwest = "0.10.8"
+reqwest = { version = "0.10", features = ["json"] }
+thiserror = "1.0.0"
 tokio = "0.2.22"
 tokio-threadpool = "0.1.18"
 serde = { version = "1.0", features = ["derive"] }

@@ -34,6 +34,12 @@ impl Uuid {
   }
 }
 
+impl std::fmt::Display for Uuid {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    write!(f, "{}", self.0.to_string())
+  }
+}
+
 impl ToSql<Text, Sqlite> for Uuid {
   fn to_sql<W: Write>(&self, out: &mut serialize::Output<W, Sqlite>) -> serialize::Result {
     let hyphenated = self.0.to_hyphenated().to_string();

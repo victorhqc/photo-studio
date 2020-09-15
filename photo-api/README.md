@@ -27,3 +27,16 @@ For watching changes install `cargo-watch`
 ```bash
 cargo install cargo-watch
 ```
+
+To see logs, you need to declare the environment variable
+
+```bash
+RUST_LOG="photo_api=info" cargo run
+```
+
+For windows it needs to be like
+
+```powershell
+$env:RUST_LOG="photo_api=info"
+cargo run
+```
