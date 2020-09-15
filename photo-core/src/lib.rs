@@ -7,6 +7,7 @@ extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
 
+pub mod conduit;
 pub mod connection;
 pub mod helpers;
 pub mod models;
