@@ -145,6 +145,11 @@ dependencies = [
 [[package]]
 name = "borrow-bag"
 version = "1.0.0"
+source = "git+https://github.com/gotham-rs/gotham.git?tag=gotham-0.5.0#81c92e9c59e792745dc546e89e3f62aab07f84cf"
+
+[[package]]
+name = "borrow-bag"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8cf5fa928e26316f52e1ce2afbcb7a0f8e28caa9e59e1a7e63d8d78d85ba56f"
 dependencies = [
@@ -707,13 +712,47 @@ checksum = "8be18de09a56b60ed0edf84bc9df007e30040691af7acd1c41874faac5895bfb"
 [[package]]
 name = "gotham"
 version = "0.5.0"
+source = "git+https://github.com/gotham-rs/gotham.git?tag=gotham-0.5.0#81c92e9c59e792745dc546e89e3f62aab07f84cf"
+dependencies = [
+ "anyhow",
+ "base64 0.12.3",
+ "bincode",
+ "borrow-bag 1.0.0 (git+https://github.com/gotham-rs/gotham.git?tag=gotham-0.5.0)",
+ "bytes 0.5.6",
+ "chrono",
+ "cookie 0.14.2",
+ "futures 0.3.5",
+ "http 0.2.1",
+ "httpdate",
+ "hyper 0.13.7",
+ "itertools",
+ "linked-hash-map",
+ "log",
+ "mime",
+ "mime_guess",
+ "mio 0.7.0",
+ "num_cpus",
+ "percent-encoding 2.1.0",
+ "pin-project",
+ "rand 0.6.5",
+ "rand_chacha 0.1.1",
+ "regex",
+ "serde",
+ "serde_derive",
+ "tokio 0.2.22",
+ "uuid 0.8.1",
+]
+
+[[package]]
+name = "gotham"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "125be317be38c7d9b6c922299e11eb44ef4e2404b406d984ea78a8226b02f3c7"
 dependencies = [
  "anyhow",
  "base64 0.12.3",
  "bincode",
- "borrow-bag",
+ "borrow-bag 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "bytes 0.5.6",
  "chrono",
  "cookie 0.14.2",
@@ -743,6 +782,15 @@ dependencies = [
 [[package]]
 name = "gotham_derive"
 version = "0.5.0"
+source = "git+https://github.com/gotham-rs/gotham.git?tag=gotham-0.5.0#81c92e9c59e792745dc546e89e3f62aab07f84cf"
+dependencies = [
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "gotham_derive"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3a81cfd306ebf919f70afaacfc16a6f54683df20b1eba79c9e006281587bfb5f"
 dependencies = [
@@ -753,13 +801,12 @@ dependencies = [
 [[package]]
 name = "gotham_middleware_diesel"
 version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "565f3acc8d3b5c57c513293bfff480dcc91a489cf4538ca6ff69af525641f208"
+source = "git+https://github.com/gotham-rs/gotham.git?tag=gotham-0.5.0#81c92e9c59e792745dc546e89e3f62aab07f84cf"
 dependencies = [
  "diesel",
  "futures 0.3.5",
- "gotham",
- "gotham_derive",
+ "gotham 0.5.0 (git+https://github.com/gotham-rs/gotham.git?tag=gotham-0.5.0)",
+ "gotham_derive 0.5.0 (git+https://github.com/gotham-rs/gotham.git?tag=gotham-0.5.0)",
  "log",
  "r2d2",
  "tokio 0.2.22",
@@ -768,12 +815,11 @@ dependencies = [
 [[package]]
 name = "gotham_middleware_jwt"
 version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62e40c05b8b8c4da056c638e939215825caf4923dcae387d187df7aa2a1a3714"
+source = "git+https://github.com/gotham-rs/gotham.git?tag=gotham-0.5.0#81c92e9c59e792745dc546e89e3f62aab07f84cf"
 dependencies = [
  "futures 0.3.5",
- "gotham",
- "gotham_derive",
+ "gotham 0.5.0 (git+https://github.com/gotham-rs/gotham.git?tag=gotham-0.5.0)",
+ "gotham_derive 0.5.0 (git+https://github.com/gotham-rs/gotham.git?tag=gotham-0.5.0)",
  "jsonwebtoken",
  "log",
  "serde",
@@ -1524,8 +1570,8 @@ dependencies = [
  "diesel",
  "dotenv",
  "futures 0.3.5",
- "gotham",
- "gotham_derive",
+ "gotham 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gotham_derive 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "gotham_middleware_diesel",
  "gotham_middleware_jwt",
  "http 0.2.1",
