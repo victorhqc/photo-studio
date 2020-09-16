@@ -26,3 +26,12 @@ pub async fn find_or_create<T: Profile>(repo: Repo, profile: T) -> Result<User, 
     })
     .await
 }
+
+pub async fn find_by_email(repo: Repo, u_email: String) -> Result<User, DieselError> {
+    repo.run(move |conn| {
+        use photo_core::schema::users::dsl::*;
+
+        users.filter(email.eq(u_email)).first::<User>(&conn)
+    })
+    .await
+}

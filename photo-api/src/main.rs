@@ -65,7 +65,7 @@ fn router() -> Router {
             .build(),
     );
 
-    let (pipelines, _authenticated) = pipelines.add(
+    let (pipelines, authenticated) = pipelines.add(
         new_pipeline()
             .add(JWTMiddleware::<AuthUser>::new(get_secret()).scheme("Bearer"))
             .build(),
@@ -80,7 +80,7 @@ fn router() -> Router {
     let pipeline_set = finalize_pipeline_set(pipelines);
     let default_chain = (default, ());
     let cors_preflight_chain = (cors, ());
-    // let auth_chain = (authenticated, default_chain);
+    let auth_chain = (authenticated, default_chain);
 
     build_router(default_chain, pipeline_set, |route| {
         route.get_or_head("/").to(empty_handler);
@@ -98,9 +98,9 @@ fn router() -> Router {
                     .to(empty_handler);
             });
 
-            // route.with_pipeline_chain(auth_chain, |route| {
-            //     route.get("/me").to(handlers::users::me);
-            // });
+            route.with_pipeline_chain(auth_chain, |route| {
+                route.get("/me").to_async(handlers::users::me);
+            });
         })
     })
 }

@@ -22,9 +22,9 @@ impl AuthUser {
         }
     }
 
-    // pub fn email(&self) -> String {
-    //   self.email.clone()
-    // }
+    pub fn email(&self) -> String {
+        self.email.clone()
+    }
 
     // pub fn user_id(&self) -> Uuid {
     //   Uuid::parse_str(&self.user_id).unwrap()
