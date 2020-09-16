@@ -5,25 +5,24 @@ use diesel::result::Error as DieselError;
 use photo_core::models::User;
 
 pub async fn find_or_create<T: Profile>(repo: Repo, profile: T) -> Result<User, DieselError> {
-  let new_user = profile.new_user();
+    let new_user = profile.new_user();
 
-  repo
-    .run(move |conn| {
-      let user_email = new_user.email.clone();
-      let user = {
-        use photo_core::schema::users::dsl::*;
+    repo.run(move |conn| {
+        let user_email = new_user.email.clone();
+        let user = {
+            use photo_core::schema::users::dsl::*;
 
-        users.filter(email.eq(user_email)).first::<User>(&conn)
-      };
+            users.filter(email.eq(user_email)).first::<User>(&conn)
+        };
 
-      match user {
-        Ok(u) => Ok(u),
-        Err(_) => {
-          let user = new_user.insert(&conn).unwrap();
+        match user {
+            Ok(u) => Ok(u),
+            Err(_) => {
+                let user = new_user.insert(&conn).unwrap();
 
-          Ok(user)
+                Ok(user)
+            }
         }
-      }
     })
     .await
 }

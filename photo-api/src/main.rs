@@ -31,6 +31,7 @@ use gotham::router::Router;
 use gotham_middleware_diesel::{self, DieselMiddleware};
 use gotham_middleware_jwt::JWTMiddleware;
 use hyper::Method;
+use photo_core::connection::{connect, db_migrate, get_database_url};
 
 fn main() {
     if cfg!(target_os = "linux") {
@@ -39,6 +40,10 @@ fn main() {
 
     dotenv().ok();
     pretty_env_logger::init();
+
+    let url = get_database_url(None);
+    let conn = connect(Some(url)).unwrap();
+    db_migrate(&conn).unwrap();
 
     let port = std::env::var("PORT").unwrap_or(String::from("7878"));
     let addr = format!("127.0.0.1:{}", port);
@@ -84,7 +89,7 @@ fn router() -> Router {
         route
             .get("/google/redirect")
             .with_query_string_extractor::<GoogleRedirectExtractor>()
-            .to(google_redirect_handler);
+            .to_async(google_redirect_handler);
 
         route.scope("/api", |route| {
             route.with_pipeline_chain(cors_preflight_chain, |route| {

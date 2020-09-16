@@ -8,13 +8,13 @@ use gotham::state::State;
 use std::pin::Pin;
 
 pub fn empty_handler(state: State) -> (State, Response<Body>) {
-  let res = create_empty_response(&state, StatusCode::NO_CONTENT);
+    let res = create_empty_response(&state, StatusCode::NO_CONTENT);
 
-  (state, res)
+    (state, res)
 }
 
 pub fn error_request(state: State, e: Error) -> Pin<Box<HandlerFuture>> {
-  let err = HandlerError::from(e);
-  let f = future::err((state, err.into()));
-  return f.boxed();
+    let err = HandlerError::from(e);
+    let f = future::err((state, err.into()));
+    return f.boxed();
 }
