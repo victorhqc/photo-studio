@@ -1,6 +1,9 @@
 #[cfg(target_os = "linux")]
 extern crate openssl;
 
+#[cfg(target_os = "linux")]
+extern crate openssl_probe;
+
 #[macro_use]
 extern crate gotham_derive;
 
@@ -30,8 +33,9 @@ use gotham_middleware_jwt::JWTMiddleware;
 use hyper::Method;
 
 fn main() {
-    #[cfg(target_os = "linux")]
-    openssl_probe::init_ssl_cert_env_vars();
+    if cfg!(target_os = "linux") {
+        openssl_probe::init_ssl_cert_env_vars();
+    }
 
     dotenv().ok();
     pretty_env_logger::init();

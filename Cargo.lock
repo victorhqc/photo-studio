@@ -1505,6 +1505,7 @@ dependencies = [
  "oauth2",
  "openssl",
  "openssl-probe",
+ "openssl-sys",
  "photo-core",
  "pretty_env_logger",
  "r2d2",
