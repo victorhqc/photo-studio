@@ -100,6 +100,10 @@ fn router() -> Router {
 
             route.with_pipeline_chain(auth_chain, |route| {
                 route.get("/me").to_async(handlers::users::me);
+
+                route.scope("/album", |route| {
+                    route.post("/").to_async(handlers::albums::new_album);
+                });
             });
         })
     })
