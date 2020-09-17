@@ -23,6 +23,7 @@ use snafu::{ResultExt, Snafu};
 pub struct User {
     pub id: Uuid,
     pub email: String,
+    #[serde(with = "ts_seconds")]
     pub created_at: NaiveDateTime,
     #[serde(with = "ts_seconds")]
     pub updated_at: NaiveDateTime,
