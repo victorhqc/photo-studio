@@ -7,11 +7,16 @@ CREATE TABLE users (
 
 CREATE TABLE albums (
   id TEXT PRIMARY KEY NOT NULL,
+  user_id TEXT NOT NULL,
   name TEXT NOT NULL,
   description TEXT NULL,
   created_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
   updated_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
-  deleted BOOLEAN NOT NULL DEFAULT false
+  deleted BOOLEAN NOT NULL DEFAULT false,
+  FOREIGN KEY (user_id)
+    REFERENCES albums (id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE photos (

@@ -1,10 +1,16 @@
 use crate::connection::Repo;
-use photo_core::models::{Album, ModelError};
+use photo_core::models::{Album, ModelError, User};
 use snafu::{Backtrace, ResultExt, Snafu};
 
-pub async fn create(repo: Repo, name: String, description: Option<String>) -> Result<Album> {
+pub async fn create(
+    repo: Repo,
+    user: &User,
+    name: String,
+    description: Option<String>,
+) -> Result<Album> {
+    let user = user.clone();
     repo.run(move |conn| {
-        let album = Album::new(name, description);
+        let album = Album::new(&user, name, description);
 
         let album = album.insert(&conn).context(Model)?;
 

@@ -78,6 +78,7 @@ impl User {
 #[table_name = "albums"]
 pub struct Album {
     pub id: Uuid,
+    pub user_id: Uuid,
     pub name: String,
     pub description: Option<String>,
     #[serde(with = "ts_seconds")]
@@ -88,11 +89,12 @@ pub struct Album {
 }
 
 impl Album {
-    pub fn new(name: String, description: Option<String>) -> Self {
+    pub fn new(user: &User, name: String, description: Option<String>) -> Self {
         let now = Utc::now().naive_utc();
 
         Self {
             id: Uuid::new_v4(),
+            user_id: user.id.clone(),
             name,
             description,
             created_at: now,

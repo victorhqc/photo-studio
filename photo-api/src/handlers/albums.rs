@@ -1,9 +1,11 @@
 use super::utils::{extract_json, ExtractJsonError};
-use crate::conduit::albums;
+use crate::auth::AuthUser;
+use crate::conduit::{albums, users};
 use crate::connection::Repo;
 use gotham::handler::HandlerResult;
 use gotham::helpers::http::response::create_response;
 use gotham::state::{FromState, State};
+use gotham_middleware_jwt::AuthorizationToken;
 use hyper::StatusCode;
 use photo_core::models::Album;
 use serde::{Deserialize, Serialize};
@@ -27,9 +29,20 @@ pub async fn new_album(mut state: State) -> HandlerResult {
         Err(e) => return Err((state, e.into())),
     };
 
+    let token = AuthorizationToken::<AuthUser>::borrow_from(&state);
+    let email = token.0.claims.email();
+
+    let user = match users::find_by_email(repo.clone(), email)
+        .await
+        .context(UserIssue)
+    {
+        Ok(u) => u,
+        Err(e) => return Err((state, e.into())),
+    };
+
     let description = req_data.description.clone();
 
-    let response = match albums::create(repo, req_data.name, description).await {
+    let response = match albums::create(repo, &user, req_data.name, description).await {
         Ok(album) => {
             let response = NewAlbumResponse { album };
             let body = serde_json::to_string(&response).expect("Fail to serialize album");
@@ -49,6 +62,13 @@ pub enum AlbumHandlersError {
     ExtractJson {
         #[snafu(source)]
         cause: ExtractJsonError,
+        backtrace: Backtrace,
+    },
+
+    #[snafu(display("Could not get user: {}", cause))]
+    UserIssue {
+        #[snafu(source)]
+        cause: users::UserError,
         backtrace: Backtrace,
     },
 }

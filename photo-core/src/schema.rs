@@ -1,6 +1,7 @@
 table! {
     albums (id) {
         id -> Text,
+        user_id -> Text,
         name -> Text,
         description -> Nullable<Text>,
         created_at -> Timestamp,
