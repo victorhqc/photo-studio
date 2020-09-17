@@ -34,9 +34,8 @@ use hyper::Method;
 use photo_core::connection::{connect, db_migrate, get_database_url};
 
 fn main() {
-    if cfg!(target_os = "linux") {
-        openssl_probe::init_ssl_cert_env_vars();
-    }
+    #[cfg(target_os = "linux")]
+    openssl_probe::init_ssl_cert_env_vars();
 
     dotenv().ok();
     pretty_env_logger::init();
@@ -103,6 +102,11 @@ fn router() -> Router {
 
                 route.scope("/album", |route| {
                     route.post("/").to_async(handlers::albums::new_album);
+
+                    route
+                        .post("/:id/photo")
+                        .with_path_extractor::<handlers::photos::AlbumPathExtractor>()
+                        .to_async(handlers::photos::new_photo);
                 });
             });
         })

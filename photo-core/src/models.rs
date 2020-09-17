@@ -54,6 +54,14 @@ impl User {
 
         Ok(user)
     }
+
+    pub fn find_by_email(conn: &Conn, u_email: &str) -> Result<User> {
+        use crate::schema::users::dsl::*;
+
+        let user = users.filter(email.eq(u_email)).first(conn).context(Query)?;
+
+        Ok(user)
+    }
 }
 
 #[derive(
@@ -107,6 +115,16 @@ impl Album {
 
         Ok(album)
     }
+
+    pub fn find_by_id(conn: &Conn, a_id: &str) -> Result<Album> {
+        let album: Album = {
+            use crate::schema::albums::dsl::*;
+
+            albums.filter(id.eq(a_id)).first(conn).context(Query)?
+        };
+
+        Ok(album)
+    }
 }
 
 #[derive(
@@ -135,6 +153,45 @@ pub struct Photo {
     #[serde(with = "ts_seconds")]
     pub updated_at: NaiveDateTime,
     pub deleted: bool,
+}
+
+impl Photo {
+    pub fn new(
+        album: &Album,
+        user: &User,
+        src: String,
+        main_color: String,
+        description: Option<String>,
+    ) -> Self {
+        let now = Utc::now().naive_utc();
+
+        Self {
+            id: Uuid::new_v4(),
+            album_id: album.id.clone(),
+            user_id: user.id.clone(),
+            src: src.clone(),
+            main_color,
+            description,
+            created_at: now,
+            updated_at: now,
+            deleted: false,
+        }
+    }
+
+    pub fn insert(&self, conn: &Conn) -> Result<Photo> {
+        let photo: Photo = {
+            use crate::schema::photos::dsl::*;
+
+            diesel::insert_into(photos)
+                .values(self)
+                .execute(conn)
+                .context(Query)?;
+
+            photos.order(created_at.desc()).first(conn).context(Query)?
+        };
+
+        Ok(photo)
+    }
 }
 
 pub type Result<T, E = ModelError> = std::result::Result<T, E>;

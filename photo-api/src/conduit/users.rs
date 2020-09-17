@@ -1,10 +1,10 @@
 use crate::auth::Profile;
 use crate::connection::Repo;
 use diesel::prelude::*;
-use diesel::result::Error as DieselError;
-use photo_core::models::User;
+use photo_core::models::{ModelError, User};
+use snafu::{Backtrace, ResultExt, Snafu};
 
-pub async fn find_or_create<T: Profile>(repo: Repo, profile: T) -> Result<User, DieselError> {
+pub async fn find_or_create<T: Profile>(repo: Repo, profile: T) -> Result<User> {
     let new_user = profile.new_user();
 
     repo.run(move |conn| {
@@ -27,11 +27,23 @@ pub async fn find_or_create<T: Profile>(repo: Repo, profile: T) -> Result<User, 
     .await
 }
 
-pub async fn find_by_email(repo: Repo, u_email: String) -> Result<User, DieselError> {
+pub async fn find_by_email(repo: Repo, u_email: String) -> Result<User> {
     repo.run(move |conn| {
-        use photo_core::schema::users::dsl::*;
+        let user = User::find_by_email(&conn, &u_email).context(Model)?;
 
-        users.filter(email.eq(u_email)).first::<User>(&conn)
+        Ok(user)
     })
     .await
+}
+
+pub type Result<T, E = UserError> = std::result::Result<T, E>;
+
+#[derive(Debug, Snafu)]
+pub enum UserError {
+    #[snafu(display("Problem with model: {}", cause))]
+    Model {
+        #[snafu(source)]
+        cause: ModelError,
+        backtrace: Backtrace,
+    },
 }

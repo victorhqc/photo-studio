@@ -13,6 +13,15 @@ pub async fn create(repo: Repo, name: String, description: Option<String>) -> Re
     .await
 }
 
+pub async fn find_by_id(repo: Repo, id: String) -> Result<Album> {
+    repo.run(move |conn| {
+        let album = Album::find_by_id(&conn, &id).context(Model)?;
+
+        Ok(album)
+    })
+    .await
+}
+
 pub type Result<T, E = AlbumError> = std::result::Result<T, E>;
 
 #[derive(Debug, Snafu)]

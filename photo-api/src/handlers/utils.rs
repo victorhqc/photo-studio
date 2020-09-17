@@ -1,3 +1,4 @@
+use bytes::Bytes;
 use futures::future;
 use futures::prelude::*;
 use gotham::anyhow::Error;
@@ -8,12 +9,18 @@ use gotham::state::{FromState, State};
 use snafu::{Backtrace, ResultExt, Snafu};
 use std::pin::Pin;
 
+pub async fn get_body_bytes(state: &mut State) -> Result<Bytes> {
+    let body_from_state = Body::take_from(state);
+    let body_bytes = body::to_bytes(body_from_state).await.context(BodyParse)?;
+
+    Ok(body_bytes)
+}
+
 pub async fn extract_json<T>(state: &mut State) -> Result<T>
 where
     T: serde::de::DeserializeOwned,
 {
-    let body_from_state = Body::take_from(state);
-    let body_bytes = body::to_bytes(body_from_state).await.context(BodyParse)?;
+    let body_bytes = get_body_bytes(state).await?;
     let json = serde_json::from_slice::<T>(&body_bytes[..]).context(JsonParse)?;
 
     Ok(json)
