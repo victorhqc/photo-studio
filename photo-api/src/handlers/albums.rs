@@ -45,7 +45,7 @@ pub async fn new_album(mut state: State) -> HandlerResult {
     let response = match albums::create(repo, &user, req_data.name, description).await {
         Ok(album) => {
             let response = NewAlbumResponse { album };
-            let body = serde_json::to_string(&response).expect("Fail to serialize album");
+            let body = serde_json::to_string(&response).expect("Failed to serialize album");
             let res = create_response(&state, StatusCode::OK, mime::APPLICATION_JSON, body);
 
             res
