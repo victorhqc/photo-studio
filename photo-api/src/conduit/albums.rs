@@ -19,6 +19,20 @@ pub async fn create(
     .await
 }
 
+pub async fn update(
+    repo: Repo,
+    album: &Album,
+    name: String,
+    description: Option<String>,
+) -> Result<Album> {
+    let album = album.clone();
+    repo.run(move |conn| {
+        let album = album.update(&conn, name, description).context(Model)?;
+        Ok(album)
+    })
+    .await
+}
+
 pub async fn find_by_id(repo: Repo, id: String) -> Result<Album> {
     repo.run(move |conn| {
         let album = Album::find_by_id(&conn, &id).context(Model)?;

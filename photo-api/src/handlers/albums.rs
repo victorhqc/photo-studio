@@ -11,6 +11,11 @@ use photo_core::models::Album;
 use serde::{Deserialize, Serialize};
 use snafu::{Backtrace, ResultExt, Snafu};
 
+#[derive(Deserialize, StateData, StaticResponseExtender)]
+pub struct AlbumPathExtractor {
+    id: String,
+}
+
 #[derive(Deserialize)]
 pub struct NewAlbumRequest {
     pub name: String,
@@ -18,7 +23,7 @@ pub struct NewAlbumRequest {
 }
 
 #[derive(Serialize)]
-pub struct NewAlbumResponse {
+pub struct AlbumResponse {
     album: Album,
 }
 
@@ -44,8 +49,44 @@ pub async fn new_album(mut state: State) -> HandlerResult {
 
     let response = match albums::create(repo, &user, req_data.name, description).await {
         Ok(album) => {
-            let response = NewAlbumResponse { album };
+            let response = AlbumResponse { album };
             let body = serde_json::to_string(&response).expect("Failed to serialize album");
+            let res = create_response(&state, StatusCode::OK, mime::APPLICATION_JSON, body);
+
+            res
+        }
+        Err(e) => return Err((state, e.into())),
+    };
+
+    Ok((state, response))
+}
+
+#[derive(Deserialize)]
+pub struct UpdateAlbumRequest {
+    pub name: String,
+    pub description: Option<String>,
+}
+
+pub async fn update_album(mut state: State) -> HandlerResult {
+    let repo = Repo::borrow_from(&state).clone();
+    let req_data: UpdateAlbumRequest = match extract_json(&mut state).await.context(ExtractJson) {
+        Ok(data) => data,
+        Err(e) => return Err((state, e.into())),
+    };
+    let path_data = AlbumPathExtractor::borrow_from(&state);
+
+    let album = match albums::find_by_id(repo.clone(), path_data.id.clone())
+        .await
+        .context(AlbumIssue)
+    {
+        Ok(a) => a,
+        Err(e) => return Err((state, e.into())),
+    };
+
+    let response = match albums::update(repo, &album, req_data.name, req_data.description).await {
+        Ok(album) => {
+            let response = AlbumResponse { album };
+            let body = serde_json::to_string(&response).expect("Failed to serialize response");
             let res = create_response(&state, StatusCode::OK, mime::APPLICATION_JSON, body);
 
             res
@@ -69,6 +110,13 @@ pub enum AlbumHandlersError {
     UserIssue {
         #[snafu(source)]
         cause: users::UserError,
+        backtrace: Backtrace,
+    },
+
+    #[snafu(display("Could not get album: {}", cause))]
+    AlbumIssue {
+        #[snafu(source)]
+        cause: albums::AlbumError,
         backtrace: Backtrace,
     },
 }
