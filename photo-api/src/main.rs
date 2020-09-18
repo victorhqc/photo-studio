@@ -114,6 +114,11 @@ fn router() -> Router {
                         .put("/:id")
                         .with_path_extractor::<handlers::photos::PhotoPathExtractor>()
                         .to_async(handlers::photos::update_photo);
+
+                    route
+                        .delete("/:id")
+                        .with_path_extractor::<handlers::photos::PhotoPathExtractor>()
+                        .to_async(handlers::photos::delete_photo);
                 })
             });
         })

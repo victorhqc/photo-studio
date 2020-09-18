@@ -48,6 +48,17 @@ pub async fn find_by_id(repo: Repo, id: String) -> Result<Photo> {
     .await
 }
 
+pub async fn delete(repo: Repo, photo: &Photo) -> Result<()> {
+    let photo = photo.clone();
+
+    repo.run(move |conn| {
+        photo.delete(&conn).context(Model)?;
+
+        Ok(())
+    })
+    .await
+}
+
 pub type Result<T, E = PhotoError> = std::result::Result<T, E>;
 
 #[derive(Debug, Snafu)]
