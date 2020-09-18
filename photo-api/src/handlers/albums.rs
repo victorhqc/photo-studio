@@ -3,7 +3,7 @@ use crate::auth::AuthUser;
 use crate::conduit::{albums, users};
 use crate::connection::Repo;
 use gotham::handler::HandlerResult;
-use gotham::helpers::http::response::create_response;
+use gotham::helpers::http::response::{create_empty_response, create_response};
 use gotham::state::{FromState, State};
 use gotham_middleware_jwt::AuthorizationToken;
 use hyper::StatusCode;
@@ -88,6 +88,30 @@ pub async fn update_album(mut state: State) -> HandlerResult {
             let response = AlbumResponse { album };
             let body = serde_json::to_string(&response).expect("Failed to serialize response");
             let res = create_response(&state, StatusCode::OK, mime::APPLICATION_JSON, body);
+
+            res
+        }
+        Err(e) => return Err((state, e.into())),
+    };
+
+    Ok((state, response))
+}
+
+pub async fn delete_album(state: State) -> HandlerResult {
+    let repo = Repo::borrow_from(&state).clone();
+    let path_data = AlbumPathExtractor::borrow_from(&state);
+
+    let album = match albums::find_by_id(repo.clone(), path_data.id.clone())
+        .await
+        .context(AlbumIssue)
+    {
+        Ok(a) => a,
+        Err(e) => return Err((state, e.into())),
+    };
+
+    let response = match albums::delete(repo, &album).await {
+        Ok(_) => {
+            let res = create_empty_response(&state, StatusCode::OK);
 
             res
         }

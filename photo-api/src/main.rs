@@ -109,6 +109,11 @@ fn router() -> Router {
                         .to_async(handlers::albums::update_album);
 
                     route
+                        .delete("/:id")
+                        .with_path_extractor::<handlers::albums::AlbumPathExtractor>()
+                        .to_async(handlers::albums::delete_album);
+
+                    route
                         .post("/:id/photo")
                         .with_path_extractor::<handlers::photos::AlbumPathExtractor>()
                         .to_async(handlers::photos::new_photo);

@@ -33,6 +33,16 @@ pub async fn update(
     .await
 }
 
+pub async fn delete(repo: Repo, album: &Album) -> Result<()> {
+    let album = album.clone();
+    repo.run(move |conn| {
+        album.delete(&conn).context(Model)?;
+
+        Ok(())
+    })
+    .await
+}
+
 pub async fn find_by_id(repo: Repo, id: String) -> Result<Album> {
     repo.run(move |conn| {
         let album = Album::find_by_id(&conn, &id).context(Model)?;
