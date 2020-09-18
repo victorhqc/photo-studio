@@ -123,7 +123,7 @@ pub async fn update_photo(mut state: State) -> HandlerResult {
     Ok((state, response))
 }
 
-pub async fn delete_photo(mut state: State) -> HandlerResult {
+pub async fn delete_photo(state: State) -> HandlerResult {
     let repo = Repo::borrow_from(&state).clone();
     let path_data = PhotoPathExtractor::borrow_from(&state);
 
