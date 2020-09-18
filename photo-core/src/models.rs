@@ -290,6 +290,14 @@ impl Photo {
         Ok(())
     }
 
+    pub fn find_by_id(conn: &Conn, p_id: &str) -> Result<Photo> {
+        use crate::schema::photos::dsl::*;
+
+        let photo = photos.filter(id.eq(p_id)).first(conn).context(Query)?;
+
+        Ok(photo)
+    }
+
     fn prepare_update(&self, index_in_album: i32, description: Option<String>) -> UpdatePhoto {
         let now = Utc::now().naive_utc();
 

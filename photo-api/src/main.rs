@@ -108,6 +108,13 @@ fn router() -> Router {
                         .with_path_extractor::<handlers::photos::AlbumPathExtractor>()
                         .to_async(handlers::photos::new_photo);
                 });
+
+                route.scope("/photo", |route| {
+                    route
+                        .put("/:id")
+                        .with_path_extractor::<handlers::photos::PhotoPathExtractor>()
+                        .to_async(handlers::photos::update_photo);
+                })
             });
         })
     })
