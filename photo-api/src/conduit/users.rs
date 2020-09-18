@@ -1,29 +1,21 @@
 use crate::auth::Profile;
 use crate::connection::Repo;
-use diesel::prelude::*;
 use photo_core::models::{ModelError, User};
 use snafu::{Backtrace, ResultExt, Snafu};
 
 pub async fn find_or_create<T: Profile>(repo: Repo, profile: T) -> Result<User> {
     let new_user = profile.new_user();
 
-    repo.run(move |conn| {
-        let user_email = new_user.email.clone();
-        let user = {
-            use photo_core::schema::users::dsl::*;
-
-            users.filter(email.eq(user_email)).first::<User>(&conn)
-        };
-
-        match user {
+    repo.run(
+        move |conn| match User::find_by_email(&conn, &new_user.email).context(Model) {
             Ok(u) => Ok(u),
             Err(_) => {
                 let user = new_user.insert(&conn).unwrap();
 
                 Ok(user)
             }
-        }
-    })
+        },
+    )
     .await
 }
 
