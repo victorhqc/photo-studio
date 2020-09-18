@@ -18,6 +18,7 @@ pub struct AlbumPathExtractor {
 
 #[derive(Deserialize)]
 pub struct NewPhotoRequest {
+    pub index_in_album: i32,
     pub name: String,
     pub src: String,
     pub main_color: String,
@@ -58,6 +59,7 @@ pub async fn new_photo(mut state: State) -> HandlerResult {
         repo,
         &album,
         &user,
+        req_data.index_in_album,
         req_data.src,
         req_data.main_color,
         req_data.description,

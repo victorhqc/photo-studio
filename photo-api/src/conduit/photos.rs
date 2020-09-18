@@ -6,6 +6,7 @@ pub async fn create(
     repo: Repo,
     album: &Album,
     user: &User,
+    index_in_album: i32,
     src: String,
     main_color: String,
     description: Option<String>,
@@ -13,7 +14,7 @@ pub async fn create(
     let album = album.clone();
     let user = user.clone();
     repo.run(move |conn| {
-        let photo = Photo::new(&album, &user, src, main_color, description);
+        let photo = Photo::new(&album, &user, index_in_album, src, main_color, description);
         let photo = photo.insert(&conn).context(Model)?;
 
         Ok(photo)
