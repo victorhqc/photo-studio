@@ -23,6 +23,7 @@ CREATE TABLE photos (
   id TEXT PRIMARY KEY NOT NULL,
   album_id TEXT NOT NULL,
   user_id TEXT NOT NULL,
+  index_in_album INTEGER NOT NULL DEFAULT 0,
   src TEXT NOT NULL,
   main_color TEXT NOT NULL,
   description TEXT,

@@ -15,6 +15,7 @@ table! {
         id -> Text,
         album_id -> Text,
         user_id -> Text,
+        index_in_album -> Integer,
         src -> Text,
         main_color -> Text,
         description -> Nullable<Text>,
