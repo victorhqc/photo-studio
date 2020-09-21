@@ -5,17 +5,26 @@ import * as actions from './actions';
 
 export type AuthAction = ActionType<typeof actions>;
 
-const initialAuthenticatedUserState: AuthenticatedUserState = null;
+const initialAuthenticatedUserState: AuthenticatedUserState = {
+  status: 'idle',
+  data: null,
+};
 
 export const user: Reducer<AuthenticatedUserState, AuthAction> = (
   state = initialAuthenticatedUserState,
   action
 ) => {
   switch (action.type) {
-    case getType(actions.authenticate):
-      return action.payload;
+    case getType(actions.authenticate.request):
+      return { status: 'loading', data: null };
+    case getType(actions.authenticate.success):
+      return { status: 'done', data: action.payload };
+    case getType(actions.authenticate.failure):
+      return { status: 'error', error: action.payload };
+    case getType(actions.authenticate.cancel):
+      return { status: 'idle', data: null };
     default:
-      return null;
+      return state;
   }
 };
 

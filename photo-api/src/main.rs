@@ -93,7 +93,7 @@ fn router() -> Router {
         route.scope("/api", |route| {
             route.with_pipeline_chain(cors_preflight_chain, |route| {
                 route
-                    .request(vec![Method::OPTIONS, Method::HEAD], "*")
+                    .request(vec![Method::OPTIONS, Method::HEAD], "/me")
                     .to(empty_handler);
             });
 

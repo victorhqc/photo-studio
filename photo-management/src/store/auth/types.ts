@@ -3,6 +3,7 @@ import { AsyncData } from '../../utils/types';
 export type AuthenticatedUser = {
   id: string;
   email: string;
+  token: string;
 };
 
-export type AuthenticatedUserState = AuthenticatedUser | null;
+export type AuthenticatedUserState = AsyncData<AuthenticatedUser>;
