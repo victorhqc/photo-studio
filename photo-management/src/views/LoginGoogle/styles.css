@@ -1,0 +1,11 @@
+#login-google {
+  @apply p-10;
+}
+
+.title {
+  @apply text-2xl mb-6;
+}
+
+.login-goggle-link {
+  @apply bg-white text-black p-2 rounded shadow cursor-pointer;
+}
