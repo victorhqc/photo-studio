@@ -10,6 +10,9 @@ extern crate gotham_derive;
 #[macro_use]
 extern crate log;
 
+#[macro_use]
+extern crate lazy_static;
+
 mod auth;
 mod conduit;
 mod connection;
@@ -32,6 +35,17 @@ use gotham_middleware_diesel::{self, DieselMiddleware};
 use gotham_middleware_jwt::JWTMiddleware;
 use hyper::Method;
 use photo_core::connection::{connect, db_migrate, get_database_url};
+
+lazy_static! {
+    pub static ref OPTIONS_OR_HEAD: Vec<Method> = {
+        let mut v = Vec::new();
+
+        v.push(Method::OPTIONS);
+        v.push(Method::HEAD);
+
+        v
+    };
+}
 
 fn main() {
     #[cfg(target_os = "linux")]
@@ -91,12 +105,6 @@ fn router() -> Router {
             .to_async(google_redirect_handler);
 
         route.scope("/api", |route| {
-            route.with_pipeline_chain(cors_preflight_chain, |route| {
-                route
-                    .request(vec![Method::OPTIONS, Method::HEAD], "/me")
-                    .to(empty_handler);
-            });
-
             route.with_pipeline_chain(auth_chain, |route| {
                 route.get("/me").to_async(handlers::users::me);
 
@@ -130,6 +138,33 @@ fn router() -> Router {
                         .with_path_extractor::<handlers::photos::PhotoPathExtractor>()
                         .to_async(handlers::photos::delete_photo);
                 })
+            });
+
+            // CORS, need to investigate a better way to do this without repeating routes.
+            route.with_pipeline_chain(cors_preflight_chain, |route| {
+                route
+                    .request(OPTIONS_OR_HEAD.clone(), "/me")
+                    .to(empty_handler);
+
+                route.scope("/album", |route| {
+                    route
+                        .request(OPTIONS_OR_HEAD.clone(), "/")
+                        .to(empty_handler);
+
+                    route
+                        .request(OPTIONS_OR_HEAD.clone(), "/:id")
+                        .to(empty_handler);
+
+                    route
+                        .request(OPTIONS_OR_HEAD.clone(), "/:id/photo")
+                        .to(empty_handler);
+                });
+
+                route.scope("/photo", |route| {
+                    route
+                        .request(OPTIONS_OR_HEAD.clone(), "/:id")
+                        .to(empty_handler);
+                });
             });
         })
     })
