@@ -20,6 +20,7 @@ use snafu::{ResultExt, Snafu};
     Queryable,
 )]
 #[table_name = "users"]
+#[serde(rename_all = "camelCase")]
 pub struct User {
     pub id: Uuid,
     pub email: String,
@@ -77,6 +78,7 @@ impl User {
     Queryable,
 )]
 #[table_name = "albums"]
+#[serde(rename_all = "camelCase")]
 pub struct Album {
     pub id: Uuid,
     pub user_id: Uuid,
@@ -91,6 +93,7 @@ pub struct Album {
 
 #[derive(Serialize, Deserialize, Debug, Clone, AsChangeset)]
 #[table_name = "albums"]
+#[serde(rename_all = "camelCase")]
 struct UpdateAlbum {
     pub name: String,
     pub description: Option<String>,
@@ -193,6 +196,7 @@ impl Album {
 #[table_name = "photos"]
 #[belongs_to(Album)]
 #[belongs_to(User)]
+#[serde(rename_all = "camelCase")]
 pub struct Photo {
     pub id: Uuid,
     pub album_id: Uuid,
