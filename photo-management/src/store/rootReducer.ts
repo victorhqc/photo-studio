@@ -14,3 +14,4 @@ export default rootReducer;
 
 export type ApplicationState = ReturnType<ReturnType<typeof rootReducer>>;
 export type ApplicationAction = AuthAction;
+export type Reducer = keyof ApplicationState;
