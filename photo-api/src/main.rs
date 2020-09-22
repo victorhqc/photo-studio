@@ -137,7 +137,9 @@ fn router() -> Router {
                         .delete("/:id")
                         .with_path_extractor::<handlers::photos::PhotoPathExtractor>()
                         .to_async(handlers::photos::delete_photo);
-                })
+
+                    route.post("/upload").to(handlers::photos::upload_photo);
+                });
             });
 
             // CORS, need to investigate a better way to do this without repeating routes.
@@ -163,6 +165,10 @@ fn router() -> Router {
                 route.scope("/photo", |route| {
                     route
                         .request(OPTIONS_OR_HEAD.clone(), "/:id")
+                        .to(empty_handler);
+
+                    route
+                        .request(OPTIONS_OR_HEAD.clone(), "/upload")
                         .to(empty_handler);
                 });
             });

@@ -2,14 +2,18 @@ use super::utils::{extract_json, ExtractJsonError};
 use crate::auth::AuthUser;
 use crate::conduit::{albums, photos, users};
 use crate::connection::Repo;
-use gotham::handler::HandlerResult;
+use futures::prelude::*;
+use gotham::handler::{HandlerFuture, HandlerResult};
 use gotham::helpers::http::response::{create_empty_response, create_response};
+use gotham::hyper::{body, header::CONTENT_TYPE, Body, HeaderMap, StatusCode};
 use gotham::state::{FromState, State};
 use gotham_middleware_jwt::AuthorizationToken;
-use hyper::StatusCode;
+use multipart::server::Multipart;
 use photo_core::models::Photo;
 use serde::{Deserialize, Serialize};
 use snafu::{Backtrace, ResultExt, Snafu};
+use std::io::{Cursor, Read};
+use std::pin::Pin;
 
 #[derive(Deserialize, StateData, StaticResponseExtender)]
 pub struct AlbumPathExtractor {
@@ -145,6 +149,63 @@ pub async fn delete_photo(state: State) -> HandlerResult {
     };
 
     Ok((state, response))
+}
+
+pub fn upload_photo(mut state: State) -> Pin<Box<HandlerFuture>> {
+    const BOUNDARY: &str = "boundary=";
+    let header_map = HeaderMap::borrow_from(&state);
+    let boundary = header_map
+        .get(CONTENT_TYPE)
+        .and_then(|ct| {
+            let ct = ct.to_str().ok()?;
+            let idx = ct.find(BOUNDARY)?;
+            Some(ct[idx + BOUNDARY.len()..].to_string())
+        })
+        .unwrap();
+
+    let f = body::to_bytes(Body::take_from(&mut state)).then(|full_body| match full_body {
+        Ok(valid_body) => {
+            let mut m = Multipart::with_body(Cursor::new(valid_body), boundary);
+            match m.read_entry() {
+                Ok(Some(mut field)) => {
+                    let mut data: Vec<u8> = Vec::new();
+                    field.data.read_to_end(&mut data).expect("can't read");
+                    let res_result = String::from_utf8(data);
+                    // let res_body;
+                    // match res_result {
+                    //     Ok(r) => res_body = r.to_string(),
+                    //     Err(e) => res_body = format!("{:?}", e),
+                    // }
+                    let res = create_empty_response(&state, StatusCode::OK);
+
+                    // let res =
+                    //     create_response(&state, StatusCode::OK, mime::TEXT_PLAIN, res_body);
+                    future::ok((state, res))
+                }
+                Ok(None) => {
+                    let res = create_response(
+                        &state,
+                        StatusCode::OK,
+                        mime::TEXT_PLAIN,
+                        "can't read".to_string(),
+                    );
+                    future::ok((state, res))
+                }
+                Err(e) => {
+                    let res = create_response(
+                        &state,
+                        StatusCode::OK,
+                        mime::TEXT_PLAIN,
+                        format!("{:?}", e),
+                    );
+                    future::ok((state, res))
+                }
+            }
+        }
+        Err(e) => future::err((state, e.into())),
+    });
+
+    f.boxed()
 }
 
 #[derive(Debug, Snafu)]

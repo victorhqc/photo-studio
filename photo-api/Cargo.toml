@@ -20,6 +20,7 @@ lazy_static = "1.4"
 log = "0.4"
 pretty_env_logger = "0.4"
 mime = "0.3.16"
+multipart = { version = "0.17", default-features = false, features = ["server"] }
 oauth2 = { version = "3.0.0", features = ["reqwest-010", "futures-03"] }
 photo-core = { path = "../photo-core" }
 snafu = "0.6.9"
