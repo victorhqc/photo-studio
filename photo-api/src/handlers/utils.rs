@@ -4,19 +4,23 @@ use futures::prelude::*;
 use gotham::anyhow::Error;
 use gotham::handler::{HandlerError, HandlerFuture};
 use gotham::helpers::http::response::create_empty_response;
-use gotham::hyper::{body, Body, Error as HyperError, Response, StatusCode};
+use gotham::hyper::{
+    body, header::CONTENT_TYPE, Body, Error as HyperError, HeaderMap, Response, StatusCode,
+};
 use gotham::state::{FromState, State};
+use multipart::server::Multipart;
 use snafu::{Backtrace, ResultExt, Snafu};
+use std::io::{Cursor, Read};
 use std::pin::Pin;
 
-pub async fn get_body_bytes(state: &mut State) -> Result<Bytes> {
+pub async fn get_body_bytes(state: &mut State) -> JsonResult<Bytes> {
     let body_from_state = Body::take_from(state);
     let body_bytes = body::to_bytes(body_from_state).await.context(BodyParse)?;
 
     Ok(body_bytes)
 }
 
-pub async fn extract_json<T>(state: &mut State) -> Result<T>
+pub async fn extract_json<T>(state: &mut State) -> JsonResult<T>
 where
     T: serde::de::DeserializeOwned,
 {
@@ -38,7 +42,7 @@ pub fn error_request(state: State, e: Error) -> Pin<Box<HandlerFuture>> {
     return f.boxed();
 }
 
-pub type Result<T> = std::result::Result<T, ExtractJsonError>;
+pub type JsonResult<T> = std::result::Result<T, ExtractJsonError>;
 
 #[derive(Debug, Snafu)]
 pub enum ExtractJsonError {
@@ -53,4 +57,48 @@ pub enum ExtractJsonError {
         source: serde_json::error::Error,
         backtrace: Backtrace,
     },
+}
+
+pub fn handle_multipart(mut state: State) -> Pin<Box<HandlerMultipart>> {
+    const BOUNDARY: &str = "boundary=";
+    let header_map = HeaderMap::borrow_from(&state);
+    let boundary = header_map
+        .get(CONTENT_TYPE)
+        .and_then(|ct| {
+            let ct = ct.to_str().ok()?;
+            let idx = ct.find(BOUNDARY)?;
+            Some(ct[idx + BOUNDARY.len()..].to_string())
+        })
+        .unwrap();
+
+    let f = body::to_bytes(Body::take_from(&mut state)).then(|full_body| match full_body {
+        Ok(valid_body) => {
+            let mut m = Multipart::with_body(Cursor::new(valid_body), boundary);
+            match m.read_entry() {
+                Ok(Some(mut field)) => {
+                    let mut data: Vec<u8> = Vec::new();
+                    field.data.read_to_end(&mut data).expect("can't read");
+
+                    future::ok((state, Some(data)))
+                }
+                Ok(None) => future::ok((state, None)),
+                Err(e) => future::err((state, MultiPartError::ReadEntry { source: e })),
+            }
+        }
+        Err(e) => future::err((state, MultiPartError::BodyParseIssue { source: e })),
+    });
+
+    f.boxed()
+}
+
+pub type HandlerMultipart = dyn Future<Output = MultipartResult> + Send;
+
+pub type MultipartResult = std::result::Result<(State, Option<Vec<u8>>), (State, MultiPartError)>;
+#[derive(Debug, Snafu)]
+pub enum MultiPartError {
+    #[snafu(display("Could not read multipart: {}", source))]
+    ReadEntry { source: std::io::Error },
+
+    #[snafu(display("Could not get body: {}", source))]
+    BodyParseIssue { source: HyperError },
 }

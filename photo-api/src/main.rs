@@ -138,7 +138,9 @@ fn router() -> Router {
                         .with_path_extractor::<handlers::photos::PhotoPathExtractor>()
                         .to_async(handlers::photos::delete_photo);
 
-                    route.post("/upload").to(handlers::photos::upload_photo);
+                    route
+                        .post("/upload")
+                        .to_async(handlers::photos::upload_photo);
                 });
             });
 
