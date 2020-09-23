@@ -14,6 +14,7 @@ extern crate log;
 extern crate lazy_static;
 
 mod auth;
+mod aws;
 mod conduit;
 mod connection;
 mod handlers;

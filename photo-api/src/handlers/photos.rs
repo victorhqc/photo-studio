@@ -1,20 +1,16 @@
-use super::utils::{extract_json, handle_multipart, ExtractJsonError, MultiPartError};
+use super::utils::{extract_json, handle_multipart, ExtractJsonError};
 use crate::auth::AuthUser;
+use crate::aws::{upload, AwsS3Error};
 use crate::conduit::{albums, photos, users};
 use crate::connection::Repo;
 use gotham::handler::HandlerResult;
 use gotham::helpers::http::response::{create_empty_response, create_response};
-use gotham::hyper::{Client, StatusCode};
+use gotham::hyper::StatusCode;
 use gotham::state::{FromState, State};
 use gotham_middleware_jwt::AuthorizationToken;
-use hyper_tls::HttpsConnector;
 use photo_core::models::Photo;
-use rusoto_core::{ByteStream, HttpClient, Region};
-use rusoto_credential::EnvironmentProvider;
-use rusoto_s3::{PutObjectRequest, S3Client, S3};
 use serde::{Deserialize, Serialize};
 use snafu::{Backtrace, OptionExt, ResultExt, Snafu};
-use std::env;
 
 #[derive(Deserialize, StateData, StaticResponseExtender)]
 pub struct AlbumPathExtractor {
@@ -162,20 +158,6 @@ pub async fn upload_photo(state: State) -> HandlerResult {
         Err(e) => return Err((state, e.into())),
     };
 
-    let byte_stream = ByteStream::from(multipart.data);
-
-    let hyper_builder = Client::builder();
-    let https_connector = HttpsConnector::new();
-    let http_client = HttpClient::from_builder(hyper_builder, https_connector);
-
-    let credentials_provider = EnvironmentProvider::default();
-    let s3 = S3Client::new_with(http_client, credentials_provider, Region::default());
-
-    let bucket = match env::var("AWS_S3_BUCKET_NAME").context(NoBucket) {
-        Ok(b) => b,
-        Err(e) => return Err((state, e.into())),
-    };
-
     let content_type = match multipart.content_type {
         Some(c) => Some(c.to_string()),
         None => None,
@@ -185,40 +167,13 @@ pub async fn upload_photo(state: State) -> HandlerResult {
         None => return Err((state, PhotoHandlersError::MultipartNoFilename.into())),
     };
 
-    let input = PutObjectRequest {
-        key,
-        body: Some(byte_stream),
-        bucket,
-        acl: None,
-        cache_control: None,
-        content_disposition: None,
-        content_encoding: None,
-        content_language: None,
-        content_length: None,
-        content_md5: None,
-        content_type,
-        expires: None,
-        grant_full_control: None,
-        grant_read: None,
-        grant_read_acp: None,
-        grant_write_acp: None,
-        metadata: None,
-        object_lock_legal_hold_status: None,
-        object_lock_mode: None,
-        object_lock_retain_until_date: None,
-        request_payer: None,
-        sse_customer_algorithm: None,
-        sse_customer_key: None,
-        sse_customer_key_md5: None,
-        ssekms_encryption_context: None,
-        ssekms_key_id: None,
-        server_side_encryption: None,
-        storage_class: None,
-        tagging: None,
-        website_redirect_location: None,
+    let s3_object = match upload(key, content_type, multipart.data)
+        .await
+        .context(AwsS3Issue)
+    {
+        Ok(s3) => s3,
+        Err(e) => return Err((state, e.into())),
     };
-
-    let s3_object = s3.put_object(input).await;
     println!("{:?}", s3_object);
 
     let response = create_empty_response(&state, StatusCode::OK);
@@ -253,6 +208,13 @@ pub enum PhotoHandlersError {
     PhotoIssue {
         #[snafu(source)]
         cause: photos::PhotoError,
+        backtrace: Backtrace,
+    },
+
+    #[snafu(display("Could not handle S3: {}", cause))]
+    AwsS3Issue {
+        #[snafu(source)]
+        cause: AwsS3Error,
         backtrace: Backtrace,
     },
 
