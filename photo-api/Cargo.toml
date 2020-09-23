@@ -15,6 +15,7 @@ gotham_middleware_diesel = "0.2"
 gotham_middleware_jwt = "0.5"
 http = "0.2.1"
 hyper = "0.13.7"
+hyper-tls = "0.4.3"
 jsonwebtoken = "7.2"
 lazy_static = "1.4"
 log = "0.4"
@@ -26,6 +27,9 @@ photo-core = { path = "../photo-core" }
 snafu = "0.6.9"
 r2d2 = "0.8"
 reqwest = { version = "0.10", features = ["json"] }
+rusoto_credential = "0.45.0"
+rusoto_core = "0.45.0"
+rusoto_s3 = { version = "0.45.0", features = ["serialize_structs", "deserialize_structs"] }
 thiserror = "1.0.0"
 tokio = "0.2.22"
 tokio-threadpool = "0.1.18"

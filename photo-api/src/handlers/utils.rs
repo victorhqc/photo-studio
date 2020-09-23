@@ -79,7 +79,13 @@ pub fn handle_multipart(mut state: State) -> Pin<Box<HandlerMultipart>> {
                     let mut data: Vec<u8> = Vec::new();
                     field.data.read_to_end(&mut data).expect("can't read");
 
-                    future::ok((state, Some(data)))
+                    let multipart_data = MultiPartData {
+                        data,
+                        filename: field.headers.filename.clone(),
+                        content_type: field.headers.content_type.clone(),
+                    };
+
+                    future::ok((state, Some(multipart_data)))
                 }
                 Ok(None) => future::ok((state, None)),
                 Err(e) => future::err((state, MultiPartError::ReadEntry { source: e })),
@@ -93,7 +99,15 @@ pub fn handle_multipart(mut state: State) -> Pin<Box<HandlerMultipart>> {
 
 pub type HandlerMultipart = dyn Future<Output = MultipartResult> + Send;
 
-pub type MultipartResult = std::result::Result<(State, Option<Vec<u8>>), (State, MultiPartError)>;
+pub type MultipartResult =
+    std::result::Result<(State, Option<MultiPartData>), (State, MultiPartError)>;
+
+pub struct MultiPartData {
+    pub data: Vec<u8>,
+    pub filename: Option<String>,
+    pub content_type: Option<mime::Mime>,
+}
+
 #[derive(Debug, Snafu)]
 pub enum MultiPartError {
     #[snafu(display("Could not read multipart: {}", source))]
