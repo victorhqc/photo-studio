@@ -6,7 +6,7 @@ use chrono::NaiveDateTime;
 use chrono::Utc;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
-use snafu::*;
+use snafu::ResultExt;
 
 #[derive(
     Serialize,
