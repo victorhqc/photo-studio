@@ -170,7 +170,7 @@ pub async fn upload_photo(state: State) -> HandlerResult {
         None => return Err((state, PhotoHandlersError::MultipartNoFilename.into())),
     };
 
-    let s3_object = match upload(key.clone(), content_type, multipart.data)
+    match upload(key.clone(), content_type, multipart.data)
         .await
         .context(AwsS3Issue)
     {
@@ -178,14 +178,22 @@ pub async fn upload_photo(state: State) -> HandlerResult {
         Err(e) => return Err((state, e.into())),
     };
 
-    let url = match get_url(key).context(AwsS3Issue) {
+    let photo_url = match get_url(key).context(AwsS3Issue) {
         Ok(u) => u,
         Err(e) => return Err((state, e.into())),
     };
 
-    let response = create_empty_response(&state, StatusCode::OK);
+    let response = UploadedPhotoResponse { photo_url };
+    let body = serde_json::to_string(&response).expect("Fail to serialize response");
+    let res = create_response(&state, StatusCode::OK, mime::APPLICATION_JSON, body);
 
-    Ok((state, response))
+    Ok((state, res))
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UploadedPhotoResponse {
+    photo_url: String,
 }
 
 #[derive(Debug, Snafu)]
