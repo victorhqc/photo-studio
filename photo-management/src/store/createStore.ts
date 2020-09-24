@@ -7,7 +7,7 @@ import { Reducer } from './index';
 import { localStorageMiddleware, getStateFromLocalStorage } from './localStorageMiddleware';
 import rootReducer from './rootReducer';
 import rootSaga from './rootSaga';
-import { ApiMaker } from '../api';
+import { ApiFactory } from '../api';
 
 const sagaMiddleware = createSagaMiddleware({});
 const composeEnhancers = composeWithDevTools({});
@@ -30,7 +30,7 @@ const buildStore = (history: History) => {
 
   sagaMiddleware.run(rootSaga);
 
-  const api = ApiMaker.Api(store);
+  const api = ApiFactory.Build(store);
   window.__API__ = api;
 
   return store;

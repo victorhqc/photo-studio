@@ -1,8 +1,8 @@
 import { Store } from 'redux';
 import { selectToken, logout } from '../store/auth';
 
-export const ApiMaker = {
-  Api(store: Store) {
+export const ApiFactory = {
+  Build(store: Store) {
     return this.apiInstance(store);
   },
 
@@ -17,7 +17,7 @@ export const ApiMaker = {
       return null;
     }
 
-    const res = await fetch(`${ApiMaker.forgeUrl()}${path}`, {
+    const res = await fetch(`${ApiFactory.forgeUrl()}${path}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -42,13 +42,13 @@ export const ApiMaker = {
   apiInstance: (store: Store) => {
     return {
       getMe: function (): Promise<AuthenticatedUser | null> {
-        return ApiMaker.get(store, '/api/me');
+        return ApiFactory.get(store, '/api/me');
       },
     };
   },
 };
 
-type Api = ReturnType<typeof ApiMaker['Api']>;
+type Api = ReturnType<typeof ApiFactory['Build']>;
 
 export function getApi(): Api {
   const api = window.__API__;
