@@ -1,3 +1,4 @@
+use crate::utils::encode_url_component;
 use gotham::hyper::Client;
 use hyper_tls::HttpsConnector;
 use rusoto_core::{ByteStream, HttpClient, Region, RusotoError};
@@ -54,6 +55,20 @@ pub async fn upload(key: String, content_type: Option<String>, data: Vec<u8>) ->
     println!("{:?}", s3_object);
 
     Ok(())
+}
+
+pub fn get_url(key: String) -> Result<String> {
+    let no_spaces = key.replace(" ", "");
+    let encoded = encode_url_component(no_spaces);
+
+    let bucket = env::var("AWS_S3_BUCKET_NAME").context(NoBucket)?;
+
+    Ok(format!(
+        "https://{}.s3.{}.amazonaws.com/{}",
+        bucket,
+        Region::default().name(),
+        encoded
+    ))
 }
 
 pub type Result<T> = std::result::Result<T, AwsS3Error>;

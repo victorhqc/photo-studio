@@ -1,6 +1,6 @@
 use super::utils::{extract_json, handle_multipart, ExtractJsonError};
 use crate::auth::AuthUser;
-use crate::aws::{upload, AwsS3Error};
+use crate::aws::{get_url, upload, AwsS3Error};
 use crate::conduit::{albums, photos, users};
 use crate::connection::Repo;
 use gotham::handler::HandlerResult;
@@ -167,14 +167,18 @@ pub async fn upload_photo(state: State) -> HandlerResult {
         None => return Err((state, PhotoHandlersError::MultipartNoFilename.into())),
     };
 
-    let s3_object = match upload(key, content_type, multipart.data)
+    let s3_object = match upload(key.clone(), content_type, multipart.data)
         .await
         .context(AwsS3Issue)
     {
         Ok(s3) => s3,
         Err(e) => return Err((state, e.into())),
     };
-    println!("{:?}", s3_object);
+
+    let url = match get_url(key).context(AwsS3Issue) {
+        Ok(u) => u,
+        Err(e) => return Err((state, e.into())),
+    };
 
     let response = create_empty_response(&state, StatusCode::OK);
 
