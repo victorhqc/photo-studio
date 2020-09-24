@@ -1,7 +1,7 @@
 use crate::auth::Profile;
 use crate::connection::Repo;
 use photo_core::models::{ModelError, User};
-use snafu::{Backtrace, ResultExt, Snafu};
+use snafu::{Backtrace, ResultExt};
 
 pub async fn find_or_create<T: Profile>(repo: Repo, profile: T) -> Result<User> {
     let new_user = profile.new_user();

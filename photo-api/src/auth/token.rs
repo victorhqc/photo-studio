@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 use std::env;
 use std::time::Duration;
 use std::time::{SystemTime, UNIX_EPOCH};
-// use uuid::Uuid;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct AuthUser {

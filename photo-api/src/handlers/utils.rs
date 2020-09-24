@@ -9,7 +9,7 @@ use gotham::hyper::{
 };
 use gotham::state::{FromState, State};
 use multipart::server::Multipart;
-use snafu::{Backtrace, ResultExt, Snafu};
+use snafu::{Backtrace, ResultExt};
 use std::io::{Cursor, Read};
 use std::pin::Pin;
 

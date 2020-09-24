@@ -3,11 +3,15 @@ use gotham::hyper::Client;
 use hyper_tls::HttpsConnector;
 use rusoto_core::{ByteStream, HttpClient, Region, RusotoError};
 use rusoto_credential::EnvironmentProvider;
-use rusoto_s3::{PutObjectError, PutObjectRequest, S3Client, S3};
-use snafu::{Backtrace, ResultExt, Snafu};
+use rusoto_s3::{PutObjectError, PutObjectOutput, PutObjectRequest, S3Client, S3};
+use snafu::{Backtrace, ResultExt};
 use std::env;
 
-pub async fn upload(key: String, content_type: Option<String>, data: Vec<u8>) -> Result<()> {
+pub async fn upload(
+    key: String,
+    content_type: Option<String>,
+    data: Vec<u8>,
+) -> Result<PutObjectOutput> {
     let byte_stream = ByteStream::from(data);
     let hyper_builder = Client::builder();
     let https_connector = HttpsConnector::new();
@@ -52,9 +56,8 @@ pub async fn upload(key: String, content_type: Option<String>, data: Vec<u8>) ->
     };
 
     let s3_object = s3.put_object(input).await.context(S3Issue)?;
-    println!("{:?}", s3_object);
 
-    Ok(())
+    Ok(s3_object)
 }
 
 pub fn get_url(key: String) -> Result<String> {

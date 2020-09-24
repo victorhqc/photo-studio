@@ -10,7 +10,7 @@ use gotham::state::{FromState, State};
 use gotham_middleware_jwt::AuthorizationToken;
 use photo_core::models::Photo;
 use serde::{Deserialize, Serialize};
-use snafu::{Backtrace, OptionExt, ResultExt, Snafu};
+use snafu::{Backtrace, OptionExt, ResultExt};
 
 #[derive(Deserialize, StateData, StaticResponseExtender)]
 pub struct AlbumPathExtractor {
@@ -18,6 +18,7 @@ pub struct AlbumPathExtractor {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct NewPhotoRequest {
     pub index_in_album: i32,
     pub name: String,
@@ -27,6 +28,7 @@ pub struct NewPhotoRequest {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct PhotoResponse {
     photo: Photo,
 }
@@ -86,6 +88,7 @@ pub struct PhotoPathExtractor {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UpdatePhotoRequest {
     pub index_in_album: i32,
     pub description: Option<String>,

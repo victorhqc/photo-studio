@@ -24,7 +24,8 @@ mime = "0.3.16"
 multipart = { version = "0.17", default-features = false, features = ["server"] }
 oauth2 = { version = "3.0.0", features = ["reqwest-010", "futures-03"] }
 photo-core = { path = "../photo-core" }
-snafu = "0.6.9"
+snafu = { version = "0.6.9", features = ["backtraces", "futures" ] }
+snafu-derive = "0.6.9"
 r2d2 = "0.8"
 reqwest = { version = "0.10", features = ["json"] }
 rusoto_credential = "0.45.0"

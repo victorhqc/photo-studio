@@ -11,7 +11,7 @@ use oauth2::{
 use photo_core::models::User;
 use reqwest::Error as ReqwestError;
 use serde::{Deserialize, Serialize};
-use snafu::{Backtrace, ResultExt, Snafu};
+use snafu::{Backtrace, ResultExt};
 use std::env;
 use url::ParseError;
 

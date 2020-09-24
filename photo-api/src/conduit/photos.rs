@@ -1,6 +1,6 @@
 use crate::connection::Repo;
 use photo_core::models::{Album, ModelError, Photo, User};
-use snafu::{Backtrace, ResultExt, Snafu};
+use snafu::{Backtrace, ResultExt};
 
 pub async fn create(
     repo: Repo,

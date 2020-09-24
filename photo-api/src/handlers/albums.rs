@@ -9,7 +9,7 @@ use gotham_middleware_jwt::AuthorizationToken;
 use hyper::StatusCode;
 use photo_core::models::Album;
 use serde::{Deserialize, Serialize};
-use snafu::{Backtrace, ResultExt, Snafu};
+use snafu::{Backtrace, ResultExt};
 
 #[derive(Deserialize, StateData, StaticResponseExtender)]
 pub struct AlbumPathExtractor {

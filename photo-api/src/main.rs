@@ -13,6 +13,9 @@ extern crate log;
 #[macro_use]
 extern crate lazy_static;
 
+#[macro_use]
+extern crate snafu_derive;
+
 mod auth;
 mod aws;
 mod conduit;
