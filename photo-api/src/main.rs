@@ -132,6 +132,11 @@ fn router() -> Router {
                         .post("/:id/photo")
                         .with_path_extractor::<handlers::photos::AlbumPathExtractor>()
                         .to_async(handlers::photos::new_photo);
+
+                    route
+                        .get("/:id/photos")
+                        .with_path_extractor::<handlers::albums::AlbumPathExtractor>()
+                        .to_async(handlers::albums::album_photos);
                 });
 
                 route.scope("/photo", |route| {
@@ -168,6 +173,10 @@ fn router() -> Router {
 
                     route
                         .request(OPTIONS_OR_HEAD.clone(), "/:id")
+                        .to(empty_handler);
+
+                    route
+                        .request(OPTIONS_OR_HEAD.clone(), "/:id/photos")
                         .to(empty_handler);
 
                     route

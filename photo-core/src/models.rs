@@ -185,6 +185,18 @@ impl Album {
         Ok(results)
     }
 
+    pub fn photos(&self, conn: &Conn) -> Result<Vec<Photo>> {
+        use crate::schema::photos::dsl::*;
+
+        let results: Vec<Photo> = photos
+            .filter(deleted.eq(false))
+            .filter(album_id.eq(self.id))
+            .load::<Photo>(conn)
+            .context(Query)?;
+
+        Ok(results)
+    }
+
     fn prepare_update(&self, name: String, description: Option<String>) -> UpdateAlbum {
         let now = Utc::now().naive_utc();
 
