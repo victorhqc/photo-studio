@@ -5,3 +5,7 @@
 .login-goggle-link {
   @apply bg-white text-black p-2 rounded shadow cursor-pointer;
 }
+
+.login-google-icon {
+  @apply mr-2;
+}

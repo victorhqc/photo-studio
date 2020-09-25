@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { connect } from 'react-redux';
+import { SignOutIcon } from '@primer/octicons-react';
 import { ApplicationState } from '../../store';
 import { selectAuthenticatedUser, logout } from '../../store/auth';
 import './styles.css';
@@ -11,6 +12,9 @@ const Header: FC<Props> = ({ user, logout }) => (
       <p className="header__email">{user.email}</p>
     </div>
     <button className="header__logout" onClick={() => logout()}>
+      <span className="header__logout-icon">
+        <SignOutIcon verticalAlign="middle" />
+      </span>
       Logout
     </button>
   </header>

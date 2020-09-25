@@ -13,3 +13,7 @@
 .header__logout {
   @apply col-start-12;
 }
+
+.header__logout-icon {
+  @apply mr-2;
+}
