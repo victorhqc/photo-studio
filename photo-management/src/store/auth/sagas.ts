@@ -29,7 +29,7 @@ function* handleAuthentication(action: ActionType<typeof authenticate.request>) 
     })
   );
 
-  yield put(push('/home'));
+  yield put(push('/'));
 }
 
 function* handleCheckCredentials() {
