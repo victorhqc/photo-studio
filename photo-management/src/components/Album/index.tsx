@@ -3,7 +3,7 @@ import './styles.css';
 import { Album } from '../../store/albums';
 
 const AlbumComponent: FC<Props> = ({ data, ...restOfProps }) => (
-  <div className="album-opened" {...restOfProps}>
+  <div className="album" {...restOfProps}>
     {data.name}
   </div>
 );
