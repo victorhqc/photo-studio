@@ -173,6 +173,18 @@ impl Album {
         Ok(album)
     }
 
+    pub fn find_all(conn: &Conn, user: &User) -> Result<Vec<Album>> {
+        use crate::schema::albums::dsl::*;
+
+        let results: Vec<Album> = albums
+            .filter(deleted.eq(false))
+            .filter(user_id.eq(user.id))
+            .load::<Album>(conn)
+            .context(Query)?;
+
+        Ok(results)
+    }
+
     fn prepare_update(&self, name: String, description: Option<String>) -> UpdateAlbum {
         let now = Utc::now().naive_utc();
 

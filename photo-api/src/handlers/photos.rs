@@ -1,4 +1,4 @@
-use super::utils::{extract_json, handle_multipart, ExtractJsonError};
+use super::utils::{extract_json, handle_multipart, HandlerUtilsError};
 use crate::auth::AuthUser;
 use crate::aws::{get_url, upload, AwsS3Error};
 use crate::conduit::{albums, photos, users};
@@ -201,7 +201,7 @@ pub enum PhotoHandlersError {
     #[snafu(display("Could not get request: {}", cause))]
     ExtractJson {
         #[snafu(source)]
-        cause: ExtractJsonError,
+        cause: HandlerUtilsError,
         backtrace: Backtrace,
     },
 

@@ -1,4 +1,4 @@
-use super::utils::{extract_json, ExtractJsonError};
+use super::utils::{extract_json, HandlerUtilsError};
 use crate::auth::AuthUser;
 use crate::conduit::{albums, users};
 use crate::connection::Repo;
@@ -10,6 +10,37 @@ use hyper::StatusCode;
 use photo_core::models::Album;
 use serde::{Deserialize, Serialize};
 use snafu::{Backtrace, ResultExt};
+
+#[derive(Serialize)]
+pub struct AllAlbumsResponse {
+    list: Vec<Album>,
+}
+
+pub async fn all_albums(state: State) -> HandlerResult {
+    let repo = Repo::borrow_from(&state).clone();
+    let token = AuthorizationToken::<AuthUser>::borrow_from(&state);
+    let email = token.0.claims.email();
+
+    let user = match users::find_by_email(repo.clone(), email)
+        .await
+        .context(UserIssue)
+    {
+        Ok(u) => u,
+        Err(e) => return Err((state, e.into())),
+    };
+    let response = match albums::find_all(repo, &user).await.context(AlbumIssue) {
+        Ok(albums) => {
+            let response = AllAlbumsResponse { list: albums };
+            let body = serde_json::to_string(&response).expect("Failed to serialize albums");
+            let res = create_response(&state, StatusCode::OK, mime::APPLICATION_JSON, body);
+
+            res
+        }
+        Err(e) => return Err((state, e.into())),
+    };
+
+    Ok((state, response))
+}
 
 #[derive(Deserialize, StateData, StaticResponseExtender)]
 pub struct AlbumPathExtractor {
@@ -29,7 +60,8 @@ pub struct AlbumResponse {
 
 pub async fn new_album(mut state: State) -> HandlerResult {
     let repo = Repo::borrow_from(&state).clone();
-    let req_data: NewAlbumRequest = match extract_json(&mut state).await.context(ExtractJson) {
+    let req_data: NewAlbumRequest = match extract_json(&mut state).await.context(HandlerUtilsIssue)
+    {
         Ok(data) => data,
         Err(e) => return Err((state, e.into())),
     };
@@ -69,10 +101,11 @@ pub struct UpdateAlbumRequest {
 
 pub async fn update_album(mut state: State) -> HandlerResult {
     let repo = Repo::borrow_from(&state).clone();
-    let req_data: UpdateAlbumRequest = match extract_json(&mut state).await.context(ExtractJson) {
-        Ok(data) => data,
-        Err(e) => return Err((state, e.into())),
-    };
+    let req_data: UpdateAlbumRequest =
+        match extract_json(&mut state).await.context(HandlerUtilsIssue) {
+            Ok(data) => data,
+            Err(e) => return Err((state, e.into())),
+        };
     let path_data = AlbumPathExtractor::borrow_from(&state);
 
     let album = match albums::find_by_id(repo.clone(), path_data.id.clone())
@@ -124,16 +157,9 @@ pub async fn delete_album(state: State) -> HandlerResult {
 #[derive(Debug, Snafu)]
 pub enum AlbumHandlersError {
     #[snafu(display("Could not get request: {}", cause))]
-    ExtractJson {
+    HandlerUtilsIssue {
         #[snafu(source)]
-        cause: ExtractJsonError,
-        backtrace: Backtrace,
-    },
-
-    #[snafu(display("Could not get user: {}", cause))]
-    UserIssue {
-        #[snafu(source)]
-        cause: users::UserError,
+        cause: HandlerUtilsError,
         backtrace: Backtrace,
     },
 
@@ -141,6 +167,13 @@ pub enum AlbumHandlersError {
     AlbumIssue {
         #[snafu(source)]
         cause: albums::AlbumError,
+        backtrace: Backtrace,
+    },
+
+    #[snafu(display("Could not get user: {}", cause))]
+    UserIssue {
+        #[snafu(source)]
+        cause: users::UserError,
         backtrace: Backtrace,
     },
 }

@@ -113,6 +113,8 @@ fn router() -> Router {
             route.with_pipeline_chain(auth_chain, |route| {
                 route.get("/me").to_async(handlers::users::me);
 
+                route.get("/albums").to_async(handlers::albums::all_albums);
+
                 route.scope("/album", |route| {
                     route.post("/").to_async(handlers::albums::new_album);
 
@@ -153,6 +155,10 @@ fn router() -> Router {
             route.with_pipeline_chain(cors_preflight_chain, |route| {
                 route
                     .request(OPTIONS_OR_HEAD.clone(), "/me")
+                    .to(empty_handler);
+
+                route
+                    .request(OPTIONS_OR_HEAD.clone(), "/albums")
                     .to(empty_handler);
 
                 route.scope("/album", |route| {

@@ -13,14 +13,14 @@ use snafu::{Backtrace, ResultExt};
 use std::io::{Cursor, Read};
 use std::pin::Pin;
 
-pub async fn get_body_bytes(state: &mut State) -> JsonResult<Bytes> {
+pub async fn get_body_bytes(state: &mut State) -> HandlerUtilsResult<Bytes> {
     let body_from_state = Body::take_from(state);
     let body_bytes = body::to_bytes(body_from_state).await.context(BodyParse)?;
 
     Ok(body_bytes)
 }
 
-pub async fn extract_json<T>(state: &mut State) -> JsonResult<T>
+pub async fn extract_json<T>(state: &mut State) -> HandlerUtilsResult<T>
 where
     T: serde::de::DeserializeOwned,
 {
@@ -42,10 +42,10 @@ pub fn error_request(state: State, e: Error) -> Pin<Box<HandlerFuture>> {
     return f.boxed();
 }
 
-pub type JsonResult<T> = std::result::Result<T, ExtractJsonError>;
+pub type HandlerUtilsResult<T> = std::result::Result<T, HandlerUtilsError>;
 
 #[derive(Debug, Snafu)]
-pub enum ExtractJsonError {
+pub enum HandlerUtilsError {
     #[snafu(display("Something went wrong parsing body: {}", source))]
     BodyParse {
         source: HyperError,
