@@ -1,5 +1,6 @@
 import { Store } from 'redux';
-import { selectToken, logout } from '../store/auth';
+import { selectToken, logout, AuthenticatedUser as User } from '../store/auth';
+import { Album } from '../store/albums';
 
 export const ApiFactory = {
   Build(store: Store) {
@@ -39,10 +40,23 @@ export const ApiFactory = {
     return res.json();
   },
 
+  getOrFail: async <T>(store: Store, path: string): Promise<T> => {
+    const result = await ApiFactory.get<T>(store, path);
+
+    if (!result) {
+      throw new Error('Result is empty');
+    }
+
+    return result;
+  },
+
   apiInstance: (store: Store) => {
     return {
-      getMe: function (): Promise<AuthenticatedUser | null> {
+      getMe: function getMe(): Promise<AuthenticatedUser | null> {
         return ApiFactory.get(store, '/api/me');
+      },
+      getAlbums: function getAlbums(): Promise<{ list: Album[] }> {
+        return ApiFactory.getOrFail(store, '/api/albums');
       },
     };
   },
@@ -63,10 +77,4 @@ export function getApi(): Api {
 export type AuthenticatedUser = {
   user: User;
   token: string;
-};
-
-export type User = {
-  id: string;
-  email: string;
-  picture: string;
 };
