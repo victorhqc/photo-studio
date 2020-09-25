@@ -60,6 +60,7 @@ fn main() {
 
     let url = get_database_url(None);
     let conn = connect(Some(url)).unwrap();
+    info!("Running migrations");
     db_migrate(&conn).unwrap();
 
     let port = std::env::var("PORT").unwrap_or(String::from("7878"));

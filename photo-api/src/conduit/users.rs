@@ -1,6 +1,6 @@
 use crate::auth::Profile;
 use crate::connection::Repo;
-use photo_core::models::{ModelError, User};
+use photo_core::models::{Album, ModelError, User};
 use snafu::{Backtrace, ResultExt};
 
 pub async fn find_or_create<T: Profile>(repo: Repo, profile: T) -> Result<User> {
@@ -10,7 +10,16 @@ pub async fn find_or_create<T: Profile>(repo: Repo, profile: T) -> Result<User> 
         move |conn| match User::find_by_email(&conn, &new_user.email).context(Model) {
             Ok(u) => Ok(u),
             Err(_) => {
+                debug!("New User, creating {}", &new_user.email);
                 let user = new_user.insert(&conn).unwrap();
+
+                let default_album = Album::new(
+                    &user,
+                    String::from("web"),
+                    Some(String::from("Album for website")),
+                );
+                debug!("Creating default album");
+                default_album.insert(&conn).unwrap();
 
                 Ok(user)
             }
