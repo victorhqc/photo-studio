@@ -2,24 +2,28 @@ import React, { FC, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../store';
 import { selectAlbums, fetchAlbums } from '../../store/albums';
+import Album from '../../components/Album';
+import AlbumOpened from '../../components/AlbumOpened';
 
 const HomeView: FC<Props> = ({ fetchAlbums, albums }) => {
   useEffect(() => {
     fetchAlbums();
   }, [fetchAlbums]);
 
-  console.log({ albums });
-  const defaultAlbum = albums[0];
-  console.log(defaultAlbum);
-
-  if (!defaultAlbum) {
+  if (albums.length === 0) {
     return null;
   }
 
+  if (albums.length === 1) {
+    return <AlbumOpened data={albums[0][0]} />;
+  }
+
   return (
-    <>
-      <h1>Home</h1>
-    </>
+    <div data-testid="home">
+      {albums.map(([album]) => (
+        <Album key={album.id} data={album} />
+      ))}
+    </div>
   );
 };
 

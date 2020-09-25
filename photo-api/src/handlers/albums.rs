@@ -13,7 +13,7 @@ use snafu::{Backtrace, ResultExt};
 
 #[derive(Serialize)]
 pub struct AllAlbumsResponse {
-    list: Vec<Album>,
+    list: Vec<(Album, Vec<Photo>)>,
 }
 
 pub async fn all_albums(state: State) -> HandlerResult {

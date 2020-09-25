@@ -173,16 +173,27 @@ impl Album {
         Ok(album)
     }
 
-    pub fn find_all(conn: &Conn, user: &User) -> Result<Vec<Album>> {
-        use crate::schema::albums::dsl::*;
+    /// Find all albums including the first picture of each album.
+    pub fn find_all(conn: &Conn, user: &User) -> Result<Vec<(Album, Vec<Photo>)>> {
+        let albums: Vec<Album> = {
+            use crate::schema::albums::dsl::*;
 
-        let results: Vec<Album> = albums
-            .filter(deleted.eq(false))
-            .filter(user_id.eq(user.id))
-            .load::<Album>(conn)
-            .context(Query)?;
+            albums
+                .filter(deleted.eq(false))
+                .filter(user_id.eq(user.id))
+                .load::<Album>(conn)
+                .context(Query)?
+        };
 
-        Ok(results)
+        let photos = Photo::belonging_to(&albums)
+            .limit(1)
+            .load::<Photo>(conn)
+            .context(Query)?
+            .grouped_by(&albums);
+
+        let data = albums.into_iter().zip(photos).collect::<Vec<_>>();
+
+        Ok(data)
     }
 
     pub fn photos(&self, conn: &Conn) -> Result<Vec<Photo>> {

@@ -1,6 +1,6 @@
 import { Store } from 'redux';
 import { selectToken, logout, AuthenticatedUser as User } from '../store/auth';
-import { Album } from '../store/albums';
+import { AlbumWithPhotos } from '../store/albums';
 
 export const ApiFactory = {
   Build(store: Store) {
@@ -55,7 +55,7 @@ export const ApiFactory = {
       getMe: function getMe(): Promise<AuthenticatedUser | null> {
         return ApiFactory.get(store, '/api/me');
       },
-      getAlbums: function getAlbums(): Promise<{ list: Album[] }> {
+      getAlbums: function getAlbums(): Promise<{ list: AlbumWithPhotos[] }> {
         return ApiFactory.getOrFail(store, '/api/albums');
       },
     };
