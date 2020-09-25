@@ -1,0 +1,7 @@
+.add-photo {
+  @apply p-4 border-2 border-gray-300 border-dashed text-2xl;
+}
+
+.add-photo__input {
+  @apply hidden;
+}

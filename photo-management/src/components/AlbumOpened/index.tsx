@@ -1,10 +1,11 @@
 import React, { FC, HTMLAttributes } from 'react';
 import './styles.css';
 import { Album } from '../../store/albums';
+import AddPhoto from '../AddPhoto';
 
 const AlbumOpened: FC<Props> = ({ data, ...restOfProps }) => (
-  <div className="album-opeened" {...restOfProps}>
-    {data.name}
+  <div className="album-opened" {...restOfProps}>
+    <AddPhoto />
   </div>
 );
 

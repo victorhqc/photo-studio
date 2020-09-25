@@ -4,6 +4,7 @@ import { ApplicationState } from '../../store';
 import { selectAlbums, fetchAlbums } from '../../store/albums';
 import Album from '../../components/Album';
 import AlbumOpened from '../../components/AlbumOpened';
+import './styles.css';
 
 const HomeView: FC<Props> = ({ fetchAlbums, albums }) => {
   useEffect(() => {
@@ -15,7 +16,11 @@ const HomeView: FC<Props> = ({ fetchAlbums, albums }) => {
   }
 
   if (albums.length === 1) {
-    return <AlbumOpened data={albums[0][0]} />;
+    return (
+      <div className="home__default-album">
+        <AlbumOpened data={albums[0][0]} />
+      </div>
+    );
   }
 
   return (
