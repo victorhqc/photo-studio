@@ -25,6 +25,7 @@ function* handleAuthentication(action: ActionType<typeof authenticate.request>) 
     authenticate.success({
       id: me.user.id,
       email: me.user.email,
+      picture: me.user.picture,
     })
   );
 

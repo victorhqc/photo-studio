@@ -117,15 +117,10 @@ pub struct GoogleProfile {
 
 impl Profile for GoogleProfile {
     fn new_user(&self) -> User {
-        // let name = self
-        //   .given_name
-        //   .as_ref()
-        //   .unwrap_or(&String::from(""))
-        //   .to_string();
-        // let family_name = self.family_name.clone();
         let email = self.email.clone();
+        let picture = self.picture.clone();
 
-        User::new(email)
+        User::new(email, picture)
     }
 }
 

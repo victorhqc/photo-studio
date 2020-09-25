@@ -1,4 +1,4 @@
 .app {
-  @apply bg-gray-800 text-white;
+  @apply bg-gray-800 text-white p-4;
   height: 100vh;
 }

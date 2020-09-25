@@ -29,6 +29,7 @@ table! {
     users (id) {
         id -> Text,
         email -> Text,
+        picture -> Nullable<Text>,
         created_at -> Timestamp,
         updated_at -> Timestamp,
     }

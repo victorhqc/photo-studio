@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../store';
-import { selectAuthenticatedUser } from '../../store/auth';
+import { selectMaybeAuthenticatedUser } from '../../store/auth';
 
 const Authentication: FC<Props> = ({ user, notAuthed, children }) => {
   if (!user) {
@@ -12,7 +12,7 @@ const Authentication: FC<Props> = ({ user, notAuthed, children }) => {
 };
 
 const mapStateToProps = (state: ApplicationState) => ({
-  user: selectAuthenticatedUser(state),
+  user: selectMaybeAuthenticatedUser(state),
 });
 
 type Props = ReturnType<typeof mapStateToProps> & OwnProps;

@@ -24,6 +24,7 @@ use snafu::ResultExt;
 pub struct User {
     pub id: Uuid,
     pub email: String,
+    pub picture: Option<String>,
     #[serde(with = "ts_seconds")]
     pub created_at: NaiveDateTime,
     #[serde(with = "ts_seconds")]
@@ -31,12 +32,13 @@ pub struct User {
 }
 
 impl User {
-    pub fn new(email: String) -> Self {
+    pub fn new(email: String, picture: Option<String>) -> Self {
         let now = Utc::now().naive_utc();
 
         Self {
             id: Uuid::new_v4(),
             email,
+            picture,
             created_at: now,
             updated_at: now,
         }

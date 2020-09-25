@@ -1,6 +1,7 @@
 CREATE TABLE users (
   id TEXT PRIMARY KEY NOT NULL,
   email TEXT UNIQUE NOT NULL,
+  picture TEXT,
   created_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
   updated_at TIMESTAMP DEFAULT current_timestamp NOT NULL
 );

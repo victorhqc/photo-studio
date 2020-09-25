@@ -68,4 +68,5 @@ export type AuthenticatedUser = {
 export type User = {
   id: string;
   email: string;
+  picture: string;
 };

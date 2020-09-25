@@ -1,0 +1,15 @@
+.header {
+  @apply grid grid-cols-12 gap-2 w-full;
+}
+
+.header__user-info {
+  @apply flex items-center col-span-4;
+}
+
+.header__img {
+  @apply rounded-full w-12 h-12 mr-2;
+}
+
+.header__logout {
+  @apply col-start-12;
+}

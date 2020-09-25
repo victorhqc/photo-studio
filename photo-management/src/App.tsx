@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Switch, Route } from 'react-router';
 import { checkCredentials } from './store/auth';
 import Authentication from './components/Authentication';
+import Header from './components/Header';
 import Authenticate from './views/Authenticate';
 import Home from './views/Home';
 import LoginGoogle from './views/LoginGoogle';
@@ -20,11 +21,14 @@ function App({ checkCredentials }: Props) {
           <Authenticate />
         </Route>
         <Authentication notAuthed={<LoginGoogle />}>
-          <Switch>
-            <Route exact path="/">
-              <Home />
-            </Route>
-          </Switch>
+          <>
+            <Header />
+            <Switch>
+              <Route exact path="/">
+                <Home />
+              </Route>
+            </Switch>
+          </>
         </Authentication>
       </Switch>
     </div>
