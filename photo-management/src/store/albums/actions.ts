@@ -14,3 +14,10 @@ export const fetchAlbumPhotos = createAsyncAction(
   'albums/fetch_photos_error',
   'albums/fetch_photos_cancel'
 )<void, Photo[], Error, void>();
+
+export const addPhoto = createAsyncAction(
+  'albums/add_photo',
+  'albums/add_photo_success',
+  'albums/add_photo_error',
+  'albums/add_photo_cancel'
+)<File, Photo, Error, void>();

@@ -1,6 +1,6 @@
 import { combineReducers, Reducer } from 'redux';
 import { ActionType, getType } from 'typesafe-actions';
-import { AlbumsState } from './types';
+import { AlbumsState, AlbumOpenedState } from './types';
 import * as actions from './actions';
 
 export type AlbumAction = ActionType<typeof actions>;
@@ -25,6 +25,28 @@ export const list: Reducer<AlbumsState, AlbumAction> = (state = initialAlbums, a
   }
 };
 
-const albums = combineReducers({ list });
+const initialOpenedAlbum: AlbumOpenedState = {
+  status: 'idle',
+  data: null,
+};
+
+export const openedAlbum: Reducer<AlbumOpenedState, AlbumAction> = (
+  state = initialOpenedAlbum,
+  action
+) => {
+  switch (action.type) {
+    case getType(actions.addPhoto.success):
+      if (!state.data) return state;
+
+      return {
+        ...state,
+        data: [state.data[0], [...state.data[1], action.payload]],
+      };
+    default:
+      return state;
+  }
+};
+
+const albums = combineReducers({ list, openedAlbum });
 
 export default { albums };
