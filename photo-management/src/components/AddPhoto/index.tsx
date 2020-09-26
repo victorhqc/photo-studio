@@ -1,11 +1,12 @@
 import React, { FC, useCallback, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { PlusIcon } from '@primer/octicons-react';
-import { addPhoto } from '../../store/albums';
+import { ApplicationState } from '../../store';
+import { addPhoto, selectUploadStatus } from '../../store/albums';
 import { getColorFrom } from '../../utils/chameleon';
 import './styles.css';
 
-const AddPhoto: FC<Props> = ({ addPhoto }) => {
+const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [imagePreview, setImagePreview] = useState<{
     base64: ArrayBuffer | string;
@@ -60,6 +61,7 @@ const AddPhoto: FC<Props> = ({ addPhoto }) => {
             <button
               className="add-photo__confirm-btn add-photo__confirm-btn--accept"
               onClick={handleConfirm}
+              disabled={status === 'loading'}
             >
               Upload
             </button>
@@ -92,6 +94,10 @@ const mapDispatchToProps = {
   addPhoto: addPhoto.request,
 };
 
-type Props = typeof mapDispatchToProps;
+const mapStateToProps = (state: ApplicationState) => ({
+  status: selectUploadStatus(state),
+});
 
-export default connect(null, mapDispatchToProps)(AddPhoto);
+type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddPhoto);

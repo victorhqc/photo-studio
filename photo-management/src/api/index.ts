@@ -1,6 +1,7 @@
 import { Store } from 'redux';
+import merge from 'lodash/merge';
 import { selectToken, logout, AuthenticatedUser as User } from '../store/auth';
-import { AlbumWithPhotos } from '../store/albums';
+import { AlbumWithPhotos, Photo } from '../store/albums';
 
 export const ApiFactory = {
   Build(store: Store) {
@@ -18,12 +19,14 @@ export const ApiFactory = {
       return null;
     }
 
-    const res = await fetch(`${ApiFactory.forgeUrl()}${path}`, {
-      ...options,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const res = await fetch(
+      `${ApiFactory.forgeUrl()}${path}`,
+      merge(options, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+    );
 
     if (!res.ok) {
       throw new Error(res.statusText);
@@ -70,6 +73,22 @@ export const ApiFactory = {
     return result;
   },
 
+  post: async <T>(store: Store, path: string, data: object): Promise<T> => {
+    const result = await ApiFactory.request<T>(store, path, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!result) {
+      throw new Error('Could not post data');
+    }
+
+    return result;
+  },
+
   apiInstance: (store: Store) => {
     return {
       getMe: function getMe(): Promise<AuthenticatedUser | null> {
@@ -83,6 +102,19 @@ export const ApiFactory = {
         body.append('photo', file);
 
         return ApiFactory.postMultipart(store, '/api/photo/upload', body);
+      },
+      newPhoto: function newPhoto(
+        albumId: string,
+        src: string,
+        color: string
+      ): Promise<{ photo: Photo }> {
+        return ApiFactory.post(store, `/api/album/${albumId}/photo`, {
+          indexInAlbum: 0,
+          name: 'test',
+          description: 'test',
+          src,
+          mainColor: color,
+        });
       },
     };
   },
@@ -108,4 +140,5 @@ export type AuthenticatedUser = {
 type RequestOptions = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: Blob | BufferSource | FormData | URLSearchParams | ReadableStream<Uint8Array> | string;
+  headers?: Record<string, string>;
 };

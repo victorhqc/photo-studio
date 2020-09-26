@@ -42,7 +42,11 @@ export const openedAlbum: Reducer<AlbumOpenedState, AlbumAction> = (
         upload: 'loading',
       };
     case getType(actions.addPhoto.success):
-      if (!state.data) return state;
+      if (!state.data)
+        return {
+          ...state,
+          upload: 'done',
+        };
 
       return {
         ...state,

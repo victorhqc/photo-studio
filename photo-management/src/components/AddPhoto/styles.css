@@ -25,3 +25,7 @@
 .add-photo__confirm-btn {
   @apply px-2 py-1 mr-2 mt-4 w-24 bg-gray-300 border-gray-500 text-gray-900 rounded-sm cursor-pointer;
 }
+
+.add-photo__confirm-btn:disabled {
+  @apply cursor-not-allowed;
+}
