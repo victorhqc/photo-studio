@@ -28,6 +28,7 @@ export const list: Reducer<AlbumsState, AlbumAction> = (state = initialAlbums, a
 const initialOpenedAlbum: AlbumOpenedState = {
   status: 'idle',
   data: null,
+  upload: 'idle',
 };
 
 export const openedAlbum: Reducer<AlbumOpenedState, AlbumAction> = (
@@ -35,12 +36,23 @@ export const openedAlbum: Reducer<AlbumOpenedState, AlbumAction> = (
   action
 ) => {
   switch (action.type) {
+    case getType(actions.addPhoto.request):
+      return {
+        ...state,
+        upload: 'loading',
+      };
     case getType(actions.addPhoto.success):
       if (!state.data) return state;
 
       return {
         ...state,
         data: [state.data[0], [...state.data[1], action.payload]],
+        upload: 'done',
+      };
+    case getType(actions.addPhoto.failure):
+      return {
+        ...state,
+        upload: 'error',
       };
     default:
       return state;

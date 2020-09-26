@@ -38,7 +38,7 @@ const AddPhoto: FC<Props> = ({ addPhoto }) => {
     const img = inputRef.current.files[0];
 
     addPhoto({ img, color: imagePreview.color });
-  }, [addPhoto]);
+  }, [addPhoto, imagePreview]);
 
   const handleCancel = useCallback(() => {
     if (!inputRef.current) return;

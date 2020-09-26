@@ -11,7 +11,7 @@ export const ApiFactory = {
     return process.env.REACT_APP_API_URL || 'REACT_APP_API_URL is not configured';
   },
 
-  get: async <T>(store: Store, path: string): Promise<T | null> => {
+  request: async <T>(store: Store, path: string, options: RequestOptions): Promise<T | null> => {
     const token = selectToken(store.getState());
 
     if (!token) {
@@ -19,6 +19,7 @@ export const ApiFactory = {
     }
 
     const res = await fetch(`${ApiFactory.forgeUrl()}${path}`, {
+      ...options,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -40,8 +41,27 @@ export const ApiFactory = {
     return res.json();
   },
 
+  get: async <T>(store: Store, path: string): Promise<T | null> => {
+    return ApiFactory.request<T>(store, path, {
+      method: 'GET',
+    });
+  },
+
   getOrFail: async <T>(store: Store, path: string): Promise<T> => {
     const result = await ApiFactory.get<T>(store, path);
+
+    if (!result) {
+      throw new Error('Result is empty');
+    }
+
+    return result;
+  },
+
+  postMultipart: async <T>(store: Store, path: string, body: FormData): Promise<T> => {
+    const result = await ApiFactory.request<T>(store, path, {
+      method: 'POST',
+      body,
+    });
 
     if (!result) {
       throw new Error('Result is empty');
@@ -57,6 +77,12 @@ export const ApiFactory = {
       },
       getAlbums: function getAlbums(): Promise<{ list: AlbumWithPhotos[] }> {
         return ApiFactory.getOrFail(store, '/api/albums');
+      },
+      uploadPhoto: function uploadPhoto(file: File): Promise<{ photoUrl: string }> {
+        const body = new FormData();
+        body.append('photo', file);
+
+        return ApiFactory.postMultipart(store, '/api/photo/upload', body);
       },
     };
   },
@@ -77,4 +103,9 @@ export function getApi(): Api {
 export type AuthenticatedUser = {
   user: User;
   token: string;
+};
+
+type RequestOptions = {
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  body?: Blob | BufferSource | FormData | URLSearchParams | ReadableStream<Uint8Array> | string;
 };

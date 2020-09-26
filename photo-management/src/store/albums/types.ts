@@ -1,8 +1,10 @@
-import { AsyncData } from '../../utils/types';
+import { AsyncData, AsyncStatus } from '../../utils/types';
 
 export type AlbumsState = AsyncData<AlbumWithPhotos[]>;
 
-export type AlbumOpenedState = AsyncData<AlbumWithPhotos>;
+export type AlbumOpenedState = AsyncData<AlbumWithPhotos> & {
+  upload: AsyncStatus;
+};
 
 export type AlbumWithPhotos = [Album, Photo[]];
 
