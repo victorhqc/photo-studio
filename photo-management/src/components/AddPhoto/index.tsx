@@ -7,7 +7,10 @@ import './styles.css';
 
 const AddPhoto: FC<Props> = ({ addPhoto }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [imagePreview, setImagePreview] = useState<ArrayBuffer | string | null>(null);
+  const [imagePreview, setImagePreview] = useState<{
+    base64: ArrayBuffer | string;
+    color: string;
+  } | null>(null);
 
   const handleClick = useCallback(() => {
     if (!inputRef.current) return;
@@ -21,20 +24,20 @@ const AddPhoto: FC<Props> = ({ addPhoto }) => {
     const file = inputRef.current.files[0];
 
     const fr = new FileReader();
-    fr.onload = () => {
-      getColorFrom(fr.result as string).then((color) => console.log('popular', color));
-      setImagePreview(fr.result);
+    fr.onload = async () => {
+      const color = await getColorFrom(fr.result as string);
+      setImagePreview({ base64: fr.result as string, color });
     };
 
     fr.readAsDataURL(file);
   }, []);
 
   const handleConfirm = useCallback(() => {
-    if (!inputRef.current || !inputRef.current.files) return;
+    if (!inputRef.current || !inputRef.current.files || !imagePreview) return;
 
-    const file = inputRef.current.files[0];
+    const img = inputRef.current.files[0];
 
-    addPhoto(file);
+    addPhoto({ img, color: imagePreview.color });
   }, [addPhoto]);
 
   const handleCancel = useCallback(() => {
@@ -50,7 +53,7 @@ const AddPhoto: FC<Props> = ({ addPhoto }) => {
         <div className="add-photo__confirm-wrapper">
           <div
             className="add-photo__preview"
-            style={{ backgroundImage: `url(${imagePreview as string})` }}
+            style={{ backgroundImage: `url(${imagePreview.base64})` }}
           />
           <div className="add-photo__confirm-info">
             <p className="add-photo__confirm-text">Upload this picture?</p>
