@@ -1,7 +1,27 @@
-.add-photo {
-  @apply p-4 border-2 border-gray-300 border-dashed text-2xl;
+.add-photo_button {
+  @apply h-40 w-40 p-4 border-2 border-gray-300 border-dashed text-2xl;
 }
 
 .add-photo__input {
   @apply hidden;
+}
+
+.add-photo__confirm-wrapper {
+  @apply flex;
+}
+
+.add-photo__preview {
+  @apply h-40 w-40 bg-cover;
+}
+
+.add-photo__confirm-info {
+  @apply ml-4;
+}
+
+.add-photo__confirm-text {
+  @apply text-xl;
+}
+
+.add-photo__confirm-btn {
+  @apply px-2 py-1 mr-2 mt-4 w-24 bg-gray-300 border-gray-500 text-gray-900 rounded-sm cursor-pointer;
 }
