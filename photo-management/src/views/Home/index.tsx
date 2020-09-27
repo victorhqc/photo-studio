@@ -1,15 +1,15 @@
 import React, { FC, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../store';
-import { selectAlbums, fetchAlbums } from '../../store/albums';
+import { selectAlbums, fetchAllAlbums } from '../../store/albums';
 import Album from '../../components/Album';
 import AlbumOpened from '../../components/AlbumOpened';
 import './styles.css';
 
-const HomeView: FC<Props> = ({ fetchAlbums, albums }) => {
+const HomeView: FC<Props> = ({ fetchAllAlbums, albums }) => {
   useEffect(() => {
-    fetchAlbums();
-  }, [fetchAlbums]);
+    fetchAllAlbums();
+  }, [fetchAllAlbums]);
 
   if (albums.length === 0) {
     return null;
@@ -33,7 +33,7 @@ const HomeView: FC<Props> = ({ fetchAlbums, albums }) => {
 };
 
 const mapDispatchToProps = {
-  fetchAlbums: fetchAlbums.request,
+  fetchAllAlbums: fetchAllAlbums.request,
 };
 
 const mapStateToProps = (state: ApplicationState) => ({

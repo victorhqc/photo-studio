@@ -1,19 +1,19 @@
 import { createAsyncAction } from 'typesafe-actions';
 import { AlbumWithPhotos, Photo } from './types';
 
-export const fetchAlbums = createAsyncAction(
-  'albums/fetch',
-  'albums/fetch_success',
-  'albums/fetch_error',
-  'albums/fetch_cancel'
+export const fetchAllAlbums = createAsyncAction(
+  'albums/fetch_all',
+  'albums/fetch_all_success',
+  'albums/fetch_all_error',
+  'albums/fetch_all_cancel'
 )<void, AlbumWithPhotos[], Error, void>();
 
-export const fetchAlbumPhotos = createAsyncAction(
-  'albums/fetch_photos',
-  'albums/fetch_photos_success',
-  'albums/fetch_photos_error',
-  'albums/fetch_photos_cancel'
-)<void, Photo[], Error, void>();
+export const fetchAlbum = createAsyncAction(
+  'albums/fetch_album',
+  'albums/fetch_album_success',
+  'albums/fetch_album_error',
+  'albums/fetch_album_cancel'
+)<string, AlbumWithPhotos, Error, void>();
 
 export const addPhoto = createAsyncAction(
   'albums/add_photo',

@@ -12,13 +12,13 @@ const initialAlbums: AlbumsState = {
 
 export const list: Reducer<AlbumsState, AlbumAction> = (state = initialAlbums, action) => {
   switch (action.type) {
-    case getType(actions.fetchAlbums.request):
+    case getType(actions.fetchAllAlbums.request):
       return { status: 'loading', data: null };
-    case getType(actions.fetchAlbums.success):
+    case getType(actions.fetchAllAlbums.success):
       return { status: 'done', data: action.payload };
-    case getType(actions.fetchAlbums.failure):
+    case getType(actions.fetchAllAlbums.failure):
       return { status: 'error', error: action.payload };
-    case getType(actions.fetchAlbums.cancel):
+    case getType(actions.fetchAllAlbums.cancel):
       return { status: 'idle', data: null };
     default:
       return state;
