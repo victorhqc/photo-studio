@@ -36,6 +36,37 @@ export const openedAlbum: Reducer<AlbumOpenedState, AlbumAction> = (
   action
 ) => {
   switch (action.type) {
+    case getType(actions.openAlbum):
+      return {
+        ...state,
+        data: [action.payload, []],
+      };
+
+    case getType(actions.fetchAlbumPhotos.request):
+      return {
+        ...state,
+        status: 'loading',
+      };
+
+    case getType(actions.fetchAlbumPhotos.success):
+      if (!state.data) {
+        console.warn('Received photos before opening album');
+        return state;
+      }
+
+      return {
+        ...state,
+        status: 'done',
+        data: [state.data[0], action.payload],
+      };
+
+    case getType(actions.fetchAlbumPhotos.failure):
+      return {
+        ...state,
+        status: 'error',
+        error: action.payload,
+      };
+
     case getType(actions.addPhoto.request):
       return {
         ...state,

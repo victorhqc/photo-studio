@@ -1,5 +1,5 @@
-import { createAsyncAction } from 'typesafe-actions';
-import { AlbumWithPhotos, Photo } from './types';
+import { createAsyncAction, createAction } from 'typesafe-actions';
+import { AlbumWithPhotos, Album, Photo } from './types';
 
 export const fetchAllAlbums = createAsyncAction(
   'albums/fetch_all',
@@ -8,12 +8,15 @@ export const fetchAllAlbums = createAsyncAction(
   'albums/fetch_all_cancel'
 )<void, AlbumWithPhotos[], Error, void>();
 
-export const fetchAlbum = createAsyncAction(
-  'albums/fetch_album',
-  'albums/fetch_album_success',
-  'albums/fetch_album_error',
-  'albums/fetch_album_cancel'
-)<string, AlbumWithPhotos, Error, void>();
+export const openAlbum = createAction('albums/open')<Album>();
+
+export const fetchAlbumPhotos = createAsyncAction(
+  'albums/fetch_photos',
+  // Looks like tuples don't work correctly
+  'albums/fetch_photos_success',
+  'albums/fetch_photos_error',
+  'albums/fetch_photos_cancel'
+)<string, Photo[], Error, void>();
 
 export const addPhoto = createAsyncAction(
   'albums/add_photo',

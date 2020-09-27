@@ -97,6 +97,9 @@ export const ApiFactory = {
       getAlbums: function getAlbums(): Promise<{ list: AlbumWithPhotos[] }> {
         return ApiFactory.getOrFail(store, '/api/albums');
       },
+      getAlbumPhotos: function getAlbumPhotos(albumId: string): Promise<{ list: Photo[] }> {
+        return ApiFactory.getOrFail(store, `/api/album/${albumId}/photos`);
+      },
       uploadPhoto: function uploadPhoto(file: File): Promise<{ photoUrl: string }> {
         const body = new FormData();
         body.append('photo', file);

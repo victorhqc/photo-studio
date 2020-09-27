@@ -5,7 +5,6 @@ import { ApplicationState } from '../../store';
 import { addPhoto, selectUploadStatus } from '../../store/albums';
 import { getColorFrom } from '../../utils/chameleon';
 import './styles.css';
-import { stat } from 'fs';
 
 const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
