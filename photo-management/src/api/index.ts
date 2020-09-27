@@ -110,12 +110,12 @@ export const ApiFactory = {
         albumId,
         src,
         mainColor,
-        name,
+        title,
         description,
       }: AddPhotoArgs): Promise<{ photo: Photo }> {
         return ApiFactory.post(store, `/api/album/${albumId}/photo`, {
           indexInAlbum: 0,
-          name,
+          title,
           description,
           src,
           mainColor,
@@ -152,6 +152,6 @@ type AddPhotoArgs = {
   albumId: string;
   src: string;
   mainColor: string;
-  name: string;
+  title: string;
   description: string | null;
 };

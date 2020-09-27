@@ -4,7 +4,7 @@ import { PlusIcon, SyncIcon } from '@primer/octicons-react';
 import { ApplicationState } from '../../store';
 import { addPhoto, selectUploadStatus } from '../../store/albums';
 import { getColorFrom } from '../../utils/chameleon';
-import PhotoGrid, { PhotoColumn } from '../PhotoGrid';
+import PhotoGrid from '../PhotoGrid';
 import './styles.css';
 
 const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
@@ -13,8 +13,8 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
     base64: ArrayBuffer | string;
     color: string;
   } | null>(null);
-  const [form, setForm] = useState<{ name: string; description: string }>({
-    name: '',
+  const [form, setForm] = useState<{ title: string; description: string }>({
+    title: '',
     description: '',
   });
 
@@ -22,7 +22,7 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
     if (status === 'done' && inputRef.current) {
       inputRef.current.value = '';
       setImagePreview(null);
-      setForm({ name: '', description: '' });
+      setForm({ title: '', description: '' });
     }
   }, [status]);
 
@@ -59,7 +59,7 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
       addPhoto({
         img,
         color: imagePreview.color,
-        name: form.name,
+        title: form.title,
         description: form.description || null,
       });
     },
@@ -73,7 +73,7 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
 
     inputRef.current.value = '';
     setImagePreview(null);
-    setForm({ name: '', description: '' });
+    setForm({ title: '', description: '' });
   }, []);
 
   return (
@@ -101,8 +101,8 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
                   id="name"
                   name="name"
                   type="text"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
                 />
               </div>
               <div className="input__wrapper">
@@ -122,7 +122,7 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
                 <button
                   className="add-photo__confirm-btn add-photo__confirm-btn--accept"
                   onClick={handleConfirm}
-                  disabled={status === 'loading' || !form.name}
+                  disabled={status === 'loading' || !form.title}
                 >
                   Upload
                 </button>

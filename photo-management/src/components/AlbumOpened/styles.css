@@ -9,3 +9,11 @@
   @apply w-full bg-cover;
   height: 24rem;
 }
+
+.album-photo__title {
+  @apply text-2xl;
+}
+
+.album-photo__description {
+  @apply text-xl;
+}

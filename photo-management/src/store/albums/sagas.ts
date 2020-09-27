@@ -1,7 +1,6 @@
 import { call, put, select } from 'typed-redux-saga';
 import { takeEvery, select as _select } from 'redux-saga/effects';
 import { ActionMatchingPattern as ActionType } from '@redux-saga/types';
-import { ApplicationState } from '../index';
 import { fetchAllAlbums, fetchAlbumPhotos, addPhoto, openAlbum } from './actions';
 import { selectOpenedAlbumOrFail, selectAlbumById } from './selectors';
 import { getApi } from '../../api';
@@ -54,7 +53,7 @@ function* handleAddPhoto(action: ActionType<typeof addPhoto.request>) {
       albumId: album.id,
       src: response.photoUrl,
       mainColor: action.payload.color,
-      name: action.payload.name,
+      title: action.payload.title,
       description: action.payload.description,
     });
     yield put(addPhoto.success(photo));

@@ -22,6 +22,8 @@ const AlbumOpened: FC<Props> = ({ albumId, fetchAlbumPhotos, albumWithPhotos, ..
               className="album-photo"
               style={{ backgroundColor: photo.mainColor, backgroundImage: `url(${photo.src})` }}
             />
+            <p className="album-photo__title">{photo.title}</p>
+            <p className="album-photo__description">{photo.description}</p>
           </PhotoColumn>
         ))}
       </PhotoGrid>
