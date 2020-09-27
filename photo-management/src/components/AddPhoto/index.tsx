@@ -4,6 +4,7 @@ import { PlusIcon, SyncIcon } from '@primer/octicons-react';
 import { ApplicationState } from '../../store';
 import { addPhoto, selectUploadStatus } from '../../store/albums';
 import { getColorFrom } from '../../utils/chameleon';
+import PhotoGrid, { PhotoColumn } from '../PhotoGrid';
 import './styles.css';
 
 const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
@@ -77,73 +78,77 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
 
   return (
     <form className="add-photo">
-      {status === 'loading' && (
-        <div className="loading rotate-infinite">
-          <SyncIcon size="large" />
-        </div>
-      )}
-      {imagePreview ? (
-        <div className="add-photo__confirm-wrapper">
-          <div
-            className="add-photo__preview"
-            style={{ backgroundImage: `url(${imagePreview.base64})` }}
-          />
-          <div className="add-photo__confirm-info">
-            <h1 className="add-photo__confirm-title">Describe the photo</h1>
-            <div className="input__wrapper">
-              <label className="input__label" htmlFor="name">
-                Name
-              </label>
-              <input
-                className="input input--text"
-                id="name"
-                name="name"
-                type="text"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-            </div>
-            <div className="input__wrapper">
-              <label className="input__label" htmlFor="description">
-                Title
-              </label>
-              <textarea
-                className="input input--textarea"
-                rows={4}
-                id="description"
-                name="description"
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-              ></textarea>
-            </div>
-            <button
-              className="add-photo__confirm-btn add-photo__confirm-btn--accept"
-              onClick={handleConfirm}
-              disabled={status === 'loading' || !form.name}
-            >
-              Upload
-            </button>
-            <button
-              className="add-photo__confirm-btn add-photo__confirm-btn--cancel"
-              onClick={handleCancel}
-            >
-              Cancel
-            </button>
+      <PhotoGrid>
+        {status === 'loading' && (
+          <div className="loading">
+            <SyncIcon className="rotate-infinite" size="large" />
           </div>
-        </div>
-      ) : (
-        <button className="add-photo_button" onClick={handleClick}>
-          <h1>Add photo</h1>
-          <PlusIcon size="medium" />
-        </button>
-      )}
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        className="add-photo__input"
-        onChange={handleFileChange}
-      />
+        )}
+        {imagePreview ? (
+          <>
+            <div
+              className="add-photo__preview"
+              style={{ backgroundImage: `url(${imagePreview.base64})` }}
+            />
+            <div className="add-photo__confirm-info">
+              <h1 className="add-photo__confirm-title">Describe the picture</h1>
+              <div className="input__wrapper">
+                <label className="input__label" htmlFor="name">
+                  Name
+                </label>
+                <input
+                  className="input input--text"
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+              </div>
+              <div className="input__wrapper">
+                <label className="input__label" htmlFor="description">
+                  Description
+                </label>
+                <textarea
+                  className="input input--textarea"
+                  rows={4}
+                  id="description"
+                  name="description"
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                ></textarea>
+              </div>
+              <div className="add-photo__btns-wrapper">
+                <button
+                  className="add-photo__confirm-btn add-photo__confirm-btn--accept"
+                  onClick={handleConfirm}
+                  disabled={status === 'loading' || !form.name}
+                >
+                  Upload
+                </button>
+                <button
+                  className="add-photo__confirm-btn add-photo__confirm-btn--cancel"
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <button className="add-photo_button" onClick={handleClick}>
+            <h1>Add photo</h1>
+            <PlusIcon size="medium" />
+          </button>
+        )}
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          className="add-photo__input"
+          onChange={handleFileChange}
+        />
+      </PhotoGrid>
     </form>
   );
 };

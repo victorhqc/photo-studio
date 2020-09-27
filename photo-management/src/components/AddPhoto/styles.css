@@ -1,5 +1,10 @@
+.add-photo {
+  @apply relative;
+}
+
 .add-photo_button {
-  @apply h-64 w-64 p-4 border-2 border-gray-300 border-dashed text-2xl;
+  @apply p-4 w-full border-2 border-gray-300 border-dashed text-2xl;
+  height: 24rem;
 }
 
 .add-photo__input {
@@ -11,15 +16,24 @@
 }
 
 .add-photo__preview {
-  @apply h-64 w-64 bg-cover;
+  @apply w-full bg-cover;
+  height: 24rem;
 }
 
 .add-photo__confirm-info {
-  @apply ml-4;
+  @apply ml-4 w-full;
 }
 
 .add-photo__confirm-title {
-  @apply text-xl;
+  @apply text-2xl mb-6;
+}
+
+.add-photo__btns-wrapper {
+  @apply grid grid-cols-4;
+}
+
+.add-photo__confirm-btn--accept {
+  @apply col-start-2;
 }
 
 .add-photo__confirm-btn {
@@ -53,4 +67,5 @@
 
 .loading {
   @apply absolute;
+  transform: translate3d(10rem, 10rem, 0);
 }

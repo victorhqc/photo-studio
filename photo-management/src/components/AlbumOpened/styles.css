@@ -1,8 +1,8 @@
 .album-opened {
 }
 
-.album-opened__photos {
-  @apply grid grid-cols-4 gap-2;
+.album-opened__add {
+  @apply mt-4;
 }
 
 .album-photo {

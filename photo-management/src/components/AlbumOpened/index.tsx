@@ -2,6 +2,7 @@ import React, { FC, HTMLAttributes, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../store';
 import { Album, Photo, fetchAlbumPhotos, selectOpenedAlbum } from '../../store/albums';
+import PhotoGrid, { PhotoColumn } from '../PhotoGrid';
 import AddPhoto from '../AddPhoto';
 import './styles.css';
 
@@ -14,17 +15,19 @@ const AlbumOpened: FC<Props> = ({ albumId, fetchAlbumPhotos, albumWithPhotos, ..
 
   return (
     <div className="album-opened" {...restOfProps}>
-      <div className="album-opened__photos">
+      <PhotoGrid>
         {photos.map((photo) => (
-          <div className="album-photo__wrapper" key={photo.id}>
+          <PhotoColumn className="album-photo__wrapper" key={photo.id}>
             <div
               className="album-photo"
               style={{ backgroundColor: photo.mainColor, backgroundImage: `url(${photo.src})` }}
             />
-          </div>
+          </PhotoColumn>
         ))}
+      </PhotoGrid>
+      <div className="album-opened__add">
+        <AddPhoto />
       </div>
-      <AddPhoto />
     </div>
   );
 };
