@@ -39,7 +39,7 @@
 }
 
 .rotate-infinite {
-  animation: rotation 8s infinite linear;
+  animation: rotation 2s infinite linear;
 }
 
 @keyframes rotation {
@@ -47,7 +47,7 @@
     transform: rotate(0deg);
   }
   to {
-    transform: rotate(359deg);
+    transform: rotate(-359deg);
   }
 }
 
