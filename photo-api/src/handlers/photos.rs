@@ -1,6 +1,6 @@
 use super::utils::{extract_json, handle_multipart, HandlerUtilsError};
 use crate::auth::AuthUser;
-use crate::aws::{get_url, upload, AwsS3Error};
+use crate::aws::{delete, get_url, upload, AwsS3Error};
 use crate::conduit::{albums, photos, users};
 use crate::connection::Repo;
 use gotham::handler::HandlerResult;
@@ -8,6 +8,7 @@ use gotham::helpers::http::response::{create_empty_response, create_response};
 use gotham::hyper::StatusCode;
 use gotham::state::{FromState, State};
 use gotham_middleware_jwt::AuthorizationToken;
+use photo_core::helpers::uuid::Uuid;
 use photo_core::models::Photo;
 use serde::{Deserialize, Serialize};
 use snafu::{Backtrace, OptionExt, ResultExt};
@@ -21,6 +22,7 @@ pub struct AlbumPathExtractor {
 #[serde(rename_all = "camelCase")]
 pub struct NewPhotoRequest {
     pub index_in_album: i32,
+    pub s3_id: String,
     pub src: String,
     pub main_color: String,
     pub title: String,
@@ -72,6 +74,7 @@ pub async fn new_photo(mut state: State) -> HandlerResult {
         &album,
         &user,
         req_data.index_in_album,
+        req_data.s3_id,
         req_data.src,
         req_data.main_color,
         req_data.title,
@@ -159,6 +162,14 @@ pub async fn delete_photo(state: State) -> HandlerResult {
         Err(e) => return Err((state, e.into())),
     };
 
+    match delete(photo.s3_id.to_string().clone())
+        .await
+        .context(AwsS3Issue)
+    {
+        Ok(_) => (),
+        Err(e) => return Err((state, e.into())),
+    };
+
     let response = match photos::delete(repo, &photo).await.context(PhotoIssue) {
         Ok(_) => {
             let res = create_empty_response(&state, StatusCode::OK);
@@ -185,10 +196,8 @@ pub async fn upload_photo(state: State) -> HandlerResult {
         Some(c) => Some(c.to_string()),
         None => None,
     };
-    let key = match multipart.filename {
-        Some(f) => f,
-        None => return Err((state, PhotoHandlersError::MultipartNoFilename.into())),
-    };
+
+    let key = Uuid::new_v4().to_string();
 
     match upload(key.clone(), content_type, multipart.data)
         .await
@@ -198,12 +207,15 @@ pub async fn upload_photo(state: State) -> HandlerResult {
         Err(e) => return Err((state, e.into())),
     };
 
-    let photo_url = match get_url(key).context(AwsS3Issue) {
+    let photo_url = match get_url(key.clone()).context(AwsS3Issue) {
         Ok(u) => u,
         Err(e) => return Err((state, e.into())),
     };
 
-    let response = UploadedPhotoResponse { photo_url };
+    let response = UploadedPhotoResponse {
+        photo_url,
+        s3_id: key,
+    };
     let body = serde_json::to_string(&response).expect("Fail to serialize response");
     let res = create_response(&state, StatusCode::OK, mime::APPLICATION_JSON, body);
 
@@ -214,6 +226,7 @@ pub async fn upload_photo(state: State) -> HandlerResult {
 #[serde(rename_all = "camelCase")]
 pub struct UploadedPhotoResponse {
     photo_url: String,
+    s3_id: String,
 }
 
 #[derive(Debug, Snafu)]

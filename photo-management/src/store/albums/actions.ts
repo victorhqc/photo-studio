@@ -24,3 +24,10 @@ export const addPhoto = createAsyncAction(
   'albums/add_photo_error',
   'albums/add_photo_cancel'
 )<{ img: File; color: string; title: string; description: string | null }, Photo, Error, void>();
+
+export const deletePhoto = createAsyncAction(
+  'albums/delete_photo',
+  'albums/delete_photo_success',
+  'albums/delete_photo_error',
+  'albums/delete_photo_abort'
+)<string, void, Error, void>();

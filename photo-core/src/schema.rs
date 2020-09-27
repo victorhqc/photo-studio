@@ -16,6 +16,7 @@ table! {
         album_id -> Text,
         user_id -> Text,
         index_in_album -> Integer,
+        s3_id -> Text,
         src -> Text,
         main_color -> Text,
         title -> Text,

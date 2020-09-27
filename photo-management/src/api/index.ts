@@ -89,6 +89,18 @@ export const ApiFactory = {
     return result;
   },
 
+  delete: async <T>(store: Store, path: string): Promise<T> => {
+    const result = await ApiFactory.request<T>(store, path, {
+      method: 'DELETE',
+    });
+
+    if (!result) {
+      throw new Error('Could not complete delete request');
+    }
+
+    return result;
+  },
+
   apiInstance: (store: Store) => {
     return {
       getMe: function getMe(): Promise<AuthenticatedUser | null> {
@@ -100,13 +112,14 @@ export const ApiFactory = {
       getAlbumPhotos: function getAlbumPhotos(albumId: string): Promise<{ list: Photo[] }> {
         return ApiFactory.getOrFail(store, `/api/album/${albumId}/photos`);
       },
-      uploadPhoto: function uploadPhoto(file: File): Promise<{ photoUrl: string }> {
+      uploadPhoto: function uploadPhoto(file: File): Promise<{ photoUrl: string; s3Id: string }> {
         const body = new FormData();
         body.append('photo', file);
 
         return ApiFactory.postMultipart(store, '/api/photo/upload', body);
       },
       newPhoto: function newPhoto({
+        s3Id,
         albumId,
         src,
         mainColor,
@@ -115,11 +128,15 @@ export const ApiFactory = {
       }: AddPhotoArgs): Promise<{ photo: Photo }> {
         return ApiFactory.post(store, `/api/album/${albumId}/photo`, {
           indexInAlbum: 0,
+          s3Id,
           title,
           description,
           src,
           mainColor,
         });
+      },
+      deletePhoto: function deletePhoto({ id }: { id: string }) {
+        return ApiFactory.delete(store, `/api/photo/${id}`);
       },
     };
   },
@@ -149,6 +166,7 @@ type RequestOptions = {
 };
 
 type AddPhotoArgs = {
+  s3Id: string;
   albumId: string;
   src: string;
   mainColor: string;

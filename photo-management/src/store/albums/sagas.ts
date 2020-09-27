@@ -1,7 +1,7 @@
 import { call, put, select } from 'typed-redux-saga';
 import { takeEvery, select as _select } from 'redux-saga/effects';
 import { ActionMatchingPattern as ActionType } from '@redux-saga/types';
-import { fetchAllAlbums, fetchAlbumPhotos, addPhoto, openAlbum } from './actions';
+import { fetchAllAlbums, fetchAlbumPhotos, addPhoto, openAlbum, deletePhoto } from './actions';
 import { selectOpenedAlbumOrFail, selectAlbumById } from './selectors';
 import { getApi } from '../../api';
 
@@ -9,6 +9,7 @@ export default function* albumsSaga() {
   yield takeEvery(fetchAllAlbums.request, handlefetchAllAlbums);
   yield takeEvery(fetchAlbumPhotos.request, handleFetchAlbumPhotos);
   yield takeEvery(addPhoto.request, handleAddPhoto);
+  yield takeEvery(deletePhoto.request, handleDeletePhoto);
 }
 
 function* handlefetchAllAlbums(action: ActionType<typeof fetchAllAlbums.request>) {
@@ -50,6 +51,7 @@ function* handleAddPhoto(action: ActionType<typeof addPhoto.request>) {
     const response = yield* call(api.uploadPhoto, action.payload.img);
 
     const { photo } = yield* call(api.newPhoto, {
+      s3Id: response.s3Id,
       albumId: album.id,
       src: response.photoUrl,
       mainColor: action.payload.color,
@@ -59,5 +61,17 @@ function* handleAddPhoto(action: ActionType<typeof addPhoto.request>) {
     yield put(addPhoto.success(photo));
   } catch (e) {
     yield put(addPhoto.failure(e));
+  }
+}
+
+function* handleDeletePhoto(action: ActionType<typeof deletePhoto.request>) {
+  try {
+    const api = getApi();
+
+    yield* call(api.deletePhoto, { id: action.payload });
+
+    yield put(deletePhoto.success());
+  } catch (e) {
+    yield put(deletePhoto.failure(e));
   }
 }

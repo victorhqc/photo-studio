@@ -3,7 +3,10 @@ use gotham::hyper::Client;
 use hyper_tls::HttpsConnector;
 use rusoto_core::{ByteStream, HttpClient, Region, RusotoError};
 use rusoto_credential::EnvironmentProvider;
-use rusoto_s3::{PutObjectError, PutObjectOutput, PutObjectRequest, S3Client, S3};
+use rusoto_s3::{
+    DeleteObjectError, DeleteObjectRequest, PutObjectError, PutObjectOutput, PutObjectRequest,
+    S3Client, S3,
+};
 use snafu::{Backtrace, ResultExt};
 use std::env;
 
@@ -55,7 +58,7 @@ pub async fn upload(
         website_redirect_location: None,
     };
 
-    let s3_object = s3.put_object(input).await.context(S3Issue)?;
+    let s3_object = s3.put_object(input).await.context(S3UploadIssue)?;
 
     Ok(s3_object)
 }
@@ -74,6 +77,30 @@ pub fn get_url(key: String) -> Result<String> {
     ))
 }
 
+pub async fn delete(key: String) -> Result<()> {
+    let hyper_builder = Client::builder();
+    let https_connector = HttpsConnector::new();
+    let http_client = HttpClient::from_builder(hyper_builder, https_connector);
+
+    let credentials_provider = EnvironmentProvider::default();
+    let s3 = S3Client::new_with(http_client, credentials_provider, Region::default());
+
+    let bucket = env::var("AWS_S3_BUCKET_NAME").context(NoBucket)?;
+
+    let del = DeleteObjectRequest {
+        bucket,
+        key,
+        bypass_governance_retention: None,
+        mfa: None,
+        request_payer: None,
+        version_id: None,
+    };
+
+    s3.delete_object(del).await.context(S3DeleteIssue)?;
+
+    Ok(())
+}
+
 pub type Result<T> = std::result::Result<T, AwsS3Error>;
 
 #[derive(Debug, Snafu)]
@@ -85,8 +112,14 @@ pub enum AwsS3Error {
     },
 
     #[snafu(display("Could not upload file to S3: {}", source))]
-    S3Issue {
+    S3UploadIssue {
         source: RusotoError<PutObjectError>,
+        backtrace: Backtrace,
+    },
+
+    #[snafu(display("Could not delete file from S3: {}", source))]
+    S3DeleteIssue {
+        source: RusotoError<DeleteObjectError>,
         backtrace: Backtrace,
     },
 }

@@ -1,7 +1,8 @@
 import React, { FC, HTMLAttributes, useState } from 'react';
+import { connect } from 'react-redux';
 import { XIcon } from '@primer/octicons-react';
 import { PhotoColumn } from '../PhotoGrid';
-import { Photo } from '../../store/albums';
+import { Photo, deletePhoto } from '../../store/albums';
 
 const PhotoComponent: FC<Props> = ({
   id,
@@ -10,6 +11,7 @@ const PhotoComponent: FC<Props> = ({
   title,
   description,
   className,
+  deletePhoto,
   ...restOfProps
 }) => {
   const [hover, setHover] = useState(false);
@@ -20,9 +22,16 @@ const PhotoComponent: FC<Props> = ({
       onMouseLeave={() => setHover(false)}
       className={`album-photo__wrapper ${className || ''}`}
       key={id}
+      {...restOfProps}
     >
       {hover && (
-        <div className="album-photo__delete" title="Delete Photo">
+        <div
+          className="album-photo__delete"
+          title="Delete Photo"
+          onClick={() => {
+            deletePhoto(id);
+          }}
+        >
           <XIcon size="medium" />
         </div>
       )}
@@ -36,7 +45,12 @@ const PhotoComponent: FC<Props> = ({
   );
 };
 
-type Props = HTMLAttributes<HTMLDivElement> &
-  Pick<Photo, 'id' | 'mainColor' | 'src' | 'title' | 'description'>;
+const mapDispatchToProps = {
+  deletePhoto: deletePhoto.request,
+};
 
-export default PhotoComponent;
+type Props = HTMLAttributes<HTMLDivElement> &
+  Pick<Photo, 'id' | 'mainColor' | 'src' | 'title' | 'description'> &
+  typeof mapDispatchToProps;
+
+export default connect(null, mapDispatchToProps)(PhotoComponent);

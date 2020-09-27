@@ -25,6 +25,7 @@ CREATE TABLE photos (
   album_id TEXT NOT NULL,
   user_id TEXT NOT NULL,
   index_in_album INTEGER NOT NULL DEFAULT 0,
+  s3_id TEXT NOT NULL,
   src TEXT NOT NULL,
   main_color TEXT NOT NULL,
   title TEXT NOT NULL,
