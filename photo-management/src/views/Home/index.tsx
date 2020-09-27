@@ -18,7 +18,7 @@ const HomeView: FC<Props> = ({ fetchAllAlbums, albums }) => {
   if (albums.length === 1) {
     return (
       <div className="home__default-album">
-        <AlbumOpened data={albums[0][0]} />
+        <AlbumOpened albumId={albums[0][0].id} />
       </div>
     );
   }

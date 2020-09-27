@@ -1,4 +1,6 @@
+import { createSelector } from 'reselect';
 import { ApplicationState } from '../index';
+import { AlbumWithPhotos } from './types';
 
 export const selectAlbums = (state: ApplicationState) => {
   const albums = state.albums.list.data;
@@ -10,14 +12,30 @@ export const selectAlbums = (state: ApplicationState) => {
   return albums;
 };
 
-export const selectOpenedAlbum = (state: ApplicationState) => {
-  const albums = state.albums.list.data;
+export const selectAlbumById = createSelector(
+  selectAlbums,
+  (_state: ApplicationState, albumId: string) => albumId,
+  (albums, albumId): AlbumWithPhotos | null => {
+    if (!albums) return null;
 
-  if (!albums) {
+    const album = albums.find(([album]) => album.id === albumId);
+
+    return album || null;
+  }
+);
+
+export const selectOpenedAlbum = (state: ApplicationState) => {
+  return state.albums.openedAlbum.data;
+};
+
+export const selectOpenedAlbumOrFail = (state: ApplicationState) => {
+  const album = selectOpenedAlbum(state);
+
+  if (!album) {
     throw new Error('No opened album');
   }
 
-  return albums[0];
+  return album;
 };
 
 export const selectUploadStatus = (state: ApplicationState) => {

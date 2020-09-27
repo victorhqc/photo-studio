@@ -1,8 +1,9 @@
 import { call, put, select } from 'typed-redux-saga';
-import { takeEvery } from 'redux-saga/effects';
+import { takeEvery, select as _select } from 'redux-saga/effects';
 import { ActionMatchingPattern as ActionType } from '@redux-saga/types';
-import { fetchAllAlbums, fetchAlbumPhotos, addPhoto } from './actions';
-import { selectOpenedAlbum } from './selectors';
+import { ApplicationState } from '../index';
+import { fetchAllAlbums, fetchAlbumPhotos, addPhoto, openAlbum } from './actions';
+import { selectOpenedAlbumOrFail, selectAlbumById } from './selectors';
 import { getApi } from '../../api';
 
 export default function* albumsSaga() {
@@ -25,6 +26,13 @@ function* handlefetchAllAlbums(action: ActionType<typeof fetchAllAlbums.request>
 
 function* handleFetchAlbumPhotos(action: ActionType<typeof fetchAlbumPhotos.request>) {
   try {
+    // @ts-ignore
+    const album = yield* select(selectAlbumById, action.payload);
+    if (!album) {
+      throw new Error('Album does not exist');
+    }
+    yield put(openAlbum(album[0]));
+
     const api = getApi();
     const { list: photos } = yield* call(api.getAlbumPhotos, action.payload);
 
@@ -38,7 +46,7 @@ function* handleFetchAlbumPhotos(action: ActionType<typeof fetchAlbumPhotos.requ
 function* handleAddPhoto(action: ActionType<typeof addPhoto.request>) {
   try {
     const api = getApi();
-    const [album] = yield* select(selectOpenedAlbum);
+    const [album] = yield* select(selectOpenedAlbumOrFail);
 
     const response = yield* call(api.uploadPhoto, action.payload.img);
 

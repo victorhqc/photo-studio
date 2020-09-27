@@ -24,9 +24,9 @@ export type Photo = {
   userId: string;
   indexInAlbum: number;
   src: string;
-  main_color: string;
+  mainColor: string;
   description: string | null;
-  created_at: number;
-  updated_at: number;
+  createdAt: number;
+  updatedAt: number;
   deleted: boolean;
 };

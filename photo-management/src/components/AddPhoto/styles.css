@@ -1,5 +1,5 @@
 .add-photo_button {
-  @apply h-40 w-40 p-4 border-2 border-gray-300 border-dashed text-2xl;
+  @apply h-64 w-64 p-4 border-2 border-gray-300 border-dashed text-2xl;
 }
 
 .add-photo__input {
@@ -11,7 +11,7 @@
 }
 
 .add-photo__preview {
-  @apply h-40 w-40 bg-cover;
+  @apply h-64 w-64 bg-cover;
 }
 
 .add-photo__confirm-info {

@@ -1,2 +1,11 @@
 .album-opened {
 }
+
+.album-opened__photos {
+  @apply grid grid-cols-4 gap-2;
+}
+
+.album-photo {
+  @apply w-full bg-cover;
+  height: 24rem;
+}
