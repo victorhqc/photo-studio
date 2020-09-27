@@ -37,3 +37,20 @@
 .input {
   @apply text-black col-span-3;
 }
+
+.rotate-infinite {
+  animation: rotation 8s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.loading {
+  @apply absolute;
+}

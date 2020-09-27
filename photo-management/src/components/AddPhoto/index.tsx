@@ -1,10 +1,11 @@
-import React, { FC, FormEvent, useCallback, useRef, useState } from 'react';
+import React, { FC, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
-import { PlusIcon } from '@primer/octicons-react';
+import { PlusIcon, SyncIcon } from '@primer/octicons-react';
 import { ApplicationState } from '../../store';
 import { addPhoto, selectUploadStatus } from '../../store/albums';
 import { getColorFrom } from '../../utils/chameleon';
 import './styles.css';
+import { stat } from 'fs';
 
 const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -16,6 +17,14 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
     name: '',
     description: '',
   });
+
+  useEffect(() => {
+    if (status === 'done' && inputRef.current) {
+      inputRef.current.value = '';
+      setImagePreview(null);
+      setForm({ name: '', description: '' });
+    }
+  }, [status]);
 
   const handleClick = useCallback((e: FormEvent) => {
     e.preventDefault();
@@ -64,10 +73,16 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
 
     inputRef.current.value = '';
     setImagePreview(null);
+    setForm({ name: '', description: '' });
   }, []);
 
   return (
     <form className="add-photo">
+      {status === 'loading' && (
+        <div className="loading rotate-infinite">
+          <SyncIcon size="large" />
+        </div>
+      )}
       {imagePreview ? (
         <div className="add-photo__confirm-wrapper">
           <div
