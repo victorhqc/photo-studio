@@ -27,6 +27,7 @@ CREATE TABLE photos (
   index_in_album INTEGER NOT NULL DEFAULT 0,
   src TEXT NOT NULL,
   main_color TEXT NOT NULL,
+  title TEXT NOT NULL,
   description TEXT,
   created_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
   updated_at TIMESTAMP DEFAULT current_timestamp NOT NULL,

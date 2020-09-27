@@ -21,9 +21,9 @@ pub struct AlbumPathExtractor {
 #[serde(rename_all = "camelCase")]
 pub struct NewPhotoRequest {
     pub index_in_album: i32,
-    pub name: String,
     pub src: String,
     pub main_color: String,
+    pub title: String,
     pub description: Option<String>,
 }
 
@@ -37,7 +37,10 @@ pub async fn new_photo(mut state: State) -> HandlerResult {
     let repo = Repo::borrow_from(&state).clone();
     let req_data: NewPhotoRequest = match extract_json(&mut state).await.context(ExtractJson) {
         Ok(data) => data,
-        Err(e) => return Err((state, e.into())),
+        Err(e) => {
+            debug!("{:?}", e);
+            return Err((state, e.into()));
+        }
     };
     let album_data = AlbumPathExtractor::borrow_from(&state);
     let token = AuthorizationToken::<AuthUser>::borrow_from(&state);
@@ -48,14 +51,20 @@ pub async fn new_photo(mut state: State) -> HandlerResult {
         .context(UserIssue)
     {
         Ok(u) => u,
-        Err(e) => return Err((state, e.into())),
+        Err(e) => {
+            debug!("{:?}", e);
+            return Err((state, e.into()));
+        }
     };
     let album = match albums::find_by_id(repo.clone(), album_data.id.clone())
         .await
         .context(AlbumIssue)
     {
         Ok(a) => a,
-        Err(e) => return Err((state, e.into())),
+        Err(e) => {
+            debug!("{:?}", e);
+            return Err((state, e.into()));
+        }
     };
 
     let response = match photos::create(
@@ -65,6 +74,7 @@ pub async fn new_photo(mut state: State) -> HandlerResult {
         req_data.index_in_album,
         req_data.src,
         req_data.main_color,
+        req_data.title,
         req_data.description,
     )
     .await
@@ -76,7 +86,10 @@ pub async fn new_photo(mut state: State) -> HandlerResult {
 
             res
         }
-        Err(e) => return Err((state, e.into())),
+        Err(e) => {
+            debug!("{:?}", e);
+            return Err((state, e.into()));
+        }
     };
 
     Ok((state, response))
@@ -91,6 +104,7 @@ pub struct PhotoPathExtractor {
 #[serde(rename_all = "camelCase")]
 pub struct UpdatePhotoRequest {
     pub index_in_album: i32,
+    pub title: String,
     pub description: Option<String>,
 }
 
@@ -110,9 +124,15 @@ pub async fn update_photo(mut state: State) -> HandlerResult {
         Err(e) => return Err((state, e.into())),
     };
 
-    let response = match photos::update(repo, &photo, req_data.index_in_album, req_data.description)
-        .await
-        .context(PhotoIssue)
+    let response = match photos::update(
+        repo,
+        &photo,
+        req_data.index_in_album,
+        req_data.title,
+        req_data.description,
+    )
+    .await
+    .context(PhotoIssue)
     {
         Ok(photo) => {
             let response = PhotoResponse { photo };

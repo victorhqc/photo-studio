@@ -241,6 +241,7 @@ pub struct Photo {
     pub index_in_album: i32,
     pub src: String,
     pub main_color: String,
+    pub title: String,
     pub description: Option<String>,
     #[serde(with = "ts_seconds")]
     pub created_at: NaiveDateTime,
@@ -253,6 +254,7 @@ pub struct Photo {
 #[table_name = "photos"]
 struct UpdatePhoto {
     pub index_in_album: i32,
+    pub title: String,
     pub description: Option<String>,
     #[serde(with = "ts_seconds")]
     pub updated_at: NaiveDateTime,
@@ -265,6 +267,7 @@ impl Photo {
         index_in_album: i32,
         src: String,
         main_color: String,
+        title: String,
         description: Option<String>,
     ) -> Self {
         let now = Utc::now().naive_utc();
@@ -276,6 +279,7 @@ impl Photo {
             index_in_album,
             src: src.clone(),
             main_color,
+            title,
             description,
             created_at: now,
             updated_at: now,
@@ -302,9 +306,10 @@ impl Photo {
         &self,
         conn: &Conn,
         index_in_album: i32,
+        title: String,
         description: Option<String>,
     ) -> Result<Photo> {
-        let updated = self.prepare_update(index_in_album, description);
+        let updated = self.prepare_update(index_in_album, title, description);
         let photo: Photo = {
             use crate::schema::photos::dsl::*;
 
@@ -339,11 +344,17 @@ impl Photo {
         Ok(photo)
     }
 
-    fn prepare_update(&self, index_in_album: i32, description: Option<String>) -> UpdatePhoto {
+    fn prepare_update(
+        &self,
+        index_in_album: i32,
+        title: String,
+        description: Option<String>,
+    ) -> UpdatePhoto {
         let now = Utc::now().naive_utc();
 
         UpdatePhoto {
             index_in_album,
+            title,
             description,
             updated_at: now,
         }

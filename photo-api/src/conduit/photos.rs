@@ -9,12 +9,21 @@ pub async fn create(
     index_in_album: i32,
     src: String,
     main_color: String,
+    title: String,
     description: Option<String>,
 ) -> Result<Photo> {
     let album = album.clone();
     let user = user.clone();
     repo.run(move |conn| {
-        let photo = Photo::new(&album, &user, index_in_album, src, main_color, description);
+        let photo = Photo::new(
+            &album,
+            &user,
+            index_in_album,
+            src,
+            main_color,
+            title,
+            description,
+        );
         let photo = photo.insert(&conn).context(Model)?;
 
         Ok(photo)
@@ -26,12 +35,13 @@ pub async fn update(
     repo: Repo,
     photo: &Photo,
     index_in_album: i32,
+    title: String,
     description: Option<String>,
 ) -> Result<Photo> {
     let photo = photo.clone();
     repo.run(move |conn| {
         let photo = photo
-            .update(&conn, index_in_album, description)
+            .update(&conn, index_in_album, title, description)
             .context(Model)?;
 
         Ok(photo)

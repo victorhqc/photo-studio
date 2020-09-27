@@ -18,6 +18,7 @@ table! {
         index_in_album -> Integer,
         src -> Text,
         main_color -> Text,
+        title -> Text,
         description -> Nullable<Text>,
         created_at -> Timestamp,
         updated_at -> Timestamp,
