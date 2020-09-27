@@ -17,3 +17,11 @@
 .album-photo__description {
   @apply text-xl;
 }
+
+.album-photo__wrapper {
+  @apply relative;
+}
+
+.album-photo__delete {
+  @apply absolute text-black right-0 top-0 cursor-pointer;
+}

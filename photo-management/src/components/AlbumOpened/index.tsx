@@ -4,6 +4,7 @@ import { ApplicationState } from '../../store';
 import { Album, Photo, fetchAlbumPhotos, selectOpenedAlbum } from '../../store/albums';
 import PhotoGrid, { PhotoColumn } from '../PhotoGrid';
 import AddPhoto from '../AddPhoto';
+import PhotoComponent from './Photo';
 import './styles.css';
 
 const AlbumOpened: FC<Props> = ({ albumId, fetchAlbumPhotos, albumWithPhotos, ...restOfProps }) => {
@@ -17,14 +18,14 @@ const AlbumOpened: FC<Props> = ({ albumId, fetchAlbumPhotos, albumWithPhotos, ..
     <div className="album-opened" {...restOfProps}>
       <PhotoGrid>
         {photos.map((photo) => (
-          <PhotoColumn className="album-photo__wrapper" key={photo.id}>
-            <div
-              className="album-photo"
-              style={{ backgroundColor: photo.mainColor, backgroundImage: `url(${photo.src})` }}
-            />
-            <p className="album-photo__title">{photo.title}</p>
-            <p className="album-photo__description">{photo.description}</p>
-          </PhotoColumn>
+          <PhotoComponent
+            key={photo.id}
+            id={photo.id}
+            title={photo.title}
+            description={photo.description}
+            src={photo.src}
+            mainColor={photo.mainColor}
+          />
         ))}
       </PhotoGrid>
       <div className="album-opened__add">
