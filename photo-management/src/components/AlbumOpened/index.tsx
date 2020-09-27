@@ -2,7 +2,7 @@ import React, { FC, HTMLAttributes, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '../../store';
 import { Album, Photo, fetchAlbumPhotos, selectOpenedAlbum } from '../../store/albums';
-import PhotoGrid, { PhotoColumn } from '../PhotoGrid';
+import PhotoGrid from '../PhotoGrid';
 import AddPhoto from '../AddPhoto';
 import PhotoComponent from './Photo';
 import './styles.css';
