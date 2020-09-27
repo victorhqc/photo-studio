@@ -103,17 +103,19 @@ export const ApiFactory = {
 
         return ApiFactory.postMultipart(store, '/api/photo/upload', body);
       },
-      newPhoto: function newPhoto(
-        albumId: string,
-        src: string,
-        color: string
-      ): Promise<{ photo: Photo }> {
+      newPhoto: function newPhoto({
+        albumId,
+        src,
+        mainColor,
+        name,
+        description,
+      }: AddPhotoArgs): Promise<{ photo: Photo }> {
         return ApiFactory.post(store, `/api/album/${albumId}/photo`, {
           indexInAlbum: 0,
-          name: 'test',
-          description: 'test',
+          name,
+          description,
           src,
-          mainColor: color,
+          mainColor,
         });
       },
     };
@@ -141,4 +143,12 @@ type RequestOptions = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: Blob | BufferSource | FormData | URLSearchParams | ReadableStream<Uint8Array> | string;
   headers?: Record<string, string>;
+};
+
+type AddPhotoArgs = {
+  albumId: string;
+  src: string;
+  mainColor: string;
+  name: string;
+  description: string | null;
 };

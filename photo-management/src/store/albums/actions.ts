@@ -20,4 +20,4 @@ export const addPhoto = createAsyncAction(
   'albums/add_photo_success',
   'albums/add_photo_error',
   'albums/add_photo_cancel'
-)<{ img: File; color: string }, Photo, Error, void>();
+)<{ img: File; color: string; name: string; description: string | null }, Photo, Error, void>();

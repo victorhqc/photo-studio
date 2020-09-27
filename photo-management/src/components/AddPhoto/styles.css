@@ -18,7 +18,7 @@
   @apply ml-4;
 }
 
-.add-photo__confirm-text {
+.add-photo__confirm-title {
   @apply text-xl;
 }
 
@@ -28,4 +28,12 @@
 
 .add-photo__confirm-btn:disabled {
   @apply cursor-not-allowed;
+}
+
+.input__wrapper {
+  @apply mt-2 grid grid-cols-4 gap-2;
+}
+
+.input {
+  @apply text-black col-span-3;
 }

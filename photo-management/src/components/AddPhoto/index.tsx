@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useRef, useState } from 'react';
+import React, { FC, FormEvent, useCallback, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { PlusIcon } from '@primer/octicons-react';
 import { ApplicationState } from '../../store';
@@ -12,8 +12,14 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
     base64: ArrayBuffer | string;
     color: string;
   } | null>(null);
+  const [form, setForm] = useState<{ name: string; description: string }>({
+    name: '',
+    description: '',
+  });
 
-  const handleClick = useCallback(() => {
+  const handleClick = useCallback((e: FormEvent) => {
+    e.preventDefault();
+
     if (!inputRef.current) return;
 
     inputRef.current.click();
@@ -33,15 +39,27 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
     fr.readAsDataURL(file);
   }, []);
 
-  const handleConfirm = useCallback(() => {
-    if (!inputRef.current || !inputRef.current.files || !imagePreview) return;
+  const handleConfirm = useCallback(
+    (e: FormEvent) => {
+      e.preventDefault();
 
-    const img = inputRef.current.files[0];
+      if (!inputRef.current || !inputRef.current.files || !imagePreview) return;
 
-    addPhoto({ img, color: imagePreview.color });
-  }, [addPhoto, imagePreview]);
+      const img = inputRef.current.files[0];
 
-  const handleCancel = useCallback(() => {
+      addPhoto({
+        img,
+        color: imagePreview.color,
+        name: form.name,
+        description: form.description || null,
+      });
+    },
+    [addPhoto, imagePreview, form]
+  );
+
+  const handleCancel = useCallback((e: FormEvent) => {
+    e.preventDefault();
+
     if (!inputRef.current) return;
 
     inputRef.current.value = '';
@@ -49,7 +67,7 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
   }, []);
 
   return (
-    <div className="add-photo">
+    <form className="add-photo">
       {imagePreview ? (
         <div className="add-photo__confirm-wrapper">
           <div
@@ -57,11 +75,37 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
             style={{ backgroundImage: `url(${imagePreview.base64})` }}
           />
           <div className="add-photo__confirm-info">
-            <p className="add-photo__confirm-text">Upload this picture?</p>
+            <h1 className="add-photo__confirm-title">Describe the photo</h1>
+            <div className="input__wrapper">
+              <label className="input__label" htmlFor="name">
+                Name
+              </label>
+              <input
+                className="input input--text"
+                id="name"
+                name="name"
+                type="text"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+            </div>
+            <div className="input__wrapper">
+              <label className="input__label" htmlFor="description">
+                Title
+              </label>
+              <textarea
+                className="input input--textarea"
+                rows={4}
+                id="description"
+                name="description"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+              ></textarea>
+            </div>
             <button
               className="add-photo__confirm-btn add-photo__confirm-btn--accept"
               onClick={handleConfirm}
-              disabled={status === 'loading'}
+              disabled={status === 'loading' || !form.name}
             >
               Upload
             </button>
@@ -86,7 +130,7 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
         className="add-photo__input"
         onChange={handleFileChange}
       />
-    </div>
+    </form>
   );
 };
 

@@ -29,7 +29,13 @@ function* handleAddPhoto(action: ActionType<typeof addPhoto.request>) {
 
     const response = yield* call(api.uploadPhoto, action.payload.img);
 
-    const { photo } = yield* call(api.newPhoto, album.id, response.photoUrl, action.payload.color);
+    const { photo } = yield* call(api.newPhoto, {
+      albumId: album.id,
+      src: response.photoUrl,
+      mainColor: action.payload.color,
+      name: action.payload.name,
+      description: action.payload.description,
+    });
     yield put(addPhoto.success(photo));
   } catch (e) {
     yield put(addPhoto.failure(e));
