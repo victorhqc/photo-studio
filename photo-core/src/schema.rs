@@ -40,8 +40,4 @@ table! {
 joinable!(photos -> albums (album_id));
 joinable!(photos -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(
-    albums,
-    photos,
-    users,
-);
+allow_tables_to_appear_in_same_query!(albums, photos, users,);
