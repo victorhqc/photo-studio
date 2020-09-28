@@ -1,6 +1,8 @@
 name: Linux Build Release
 
-on: release
+on:
+    release:
+        types: [created]
 
 # on:
 #     push:
