@@ -1,0 +1,38 @@
+name: Pull Request
+
+on: pull_request
+
+jobs:
+    code_check:
+        name: Code Check
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-latest]
+                rust: [stable]
+        steps:
+            - uses: actions/checkout@master
+            - name: Install latest stable
+              uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: stable
+                  override: true
+                  components: rustfmt, clippy
+            - name: Run cargo check
+              uses: actions-rs/cargo@v1
+              with:
+                  command: check
+            - name: Run cargo fmt
+              uses: actions-rs/cargo@v1
+              with:
+                  command: fmt
+                  args: -- --check
+            - name: Run cargo clippy
+              uses: actions-rs/cargo@v1
+              with:
+                  command: clippy
+                  args: -- -D warnings
+            - name: Run cargo test
+              uses: actions-rs/cargo@v1
+              with:
+                  command: test

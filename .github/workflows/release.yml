@@ -1,0 +1,38 @@
+name: Linux Build Release
+
+on: release
+
+# on:
+#     push:
+#         branches:
+#             - master
+
+jobs:
+    linux_build_release:
+        name: Linux Build Release
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-latest]
+                rust: [stable]
+        steps:
+            - uses: actions/checkout@master
+            - uses: montudor/action-zip@v0.1.0
+            - name: Login to docker hub
+              uses: actions-hub/docker/login@master
+              env:
+                  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+                  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+            - uses: actions-hub/docker@master
+            - name: Build Static binary
+              run: make build_in_github
+            - name: Compress binary
+              uses: montudor/action-zip@v0.1.0
+              with:
+                  args: zip -j photo-api.zip ./target/x86_64-unknown-linux-musl/release/photo-api
+            - name: Update to release
+              uses: JasonEtco/upload-to-release@master
+              with:
+                  args: photo-api.zip application/zip
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
