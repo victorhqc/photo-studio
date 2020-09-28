@@ -26,6 +26,8 @@ jobs:
                   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
                   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
             - uses: actions-hub/docker@master
+            - name: Build Docker image
+              run: docker build -t photo-studio-musl:latest
             - name: Build Static binary
               run: make build_in_github
             - name: Compress binary

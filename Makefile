@@ -1,3 +1,6 @@
+bake:
+	docker build -t photo-studio-musl:latest .
+
 build:
 	./scripts/build.sh photo-api $(version)
 

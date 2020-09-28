@@ -7,12 +7,12 @@
 
 set -euo pipefail
 
-rust-musl-builder() {
-    docker run --rm -i -v "$(pwd)":/home/rust/src -v cargo-registry:/home/rust/.cargo/registry ekidd/rust-musl-builder "$@"
+photo-studio-musl() {
+    docker run --rm -i -v "$(pwd)":/home/rust/src -v cargo-registry:/home/rust/.cargo/registry ekidd/photo-studio-musl "$@"
 }
 
-echo "Building static binaries using ekidd/rust-musl-builder"
-rust-musl-builder sudo chown -R rust:rust /home/rust
-rust-musl-builder sudo chown -R rust:rust /home/rust/.cargo/registry
-rust-musl-builder cargo build --release
+echo "Building static binaries using ekidd/photo-studio-musl"
+photo-studio-musl sudo chown -R rust:rust /home/rust
+photo-studio-musl sudo chown -R rust:rust /home/rust/.cargo/registry
+photo-studio-musl cargo build --release
 
