@@ -8,7 +8,7 @@
 set -euo pipefail
 
 photo-studio-musl() {
-    docker run --rm -i -v "$(pwd)":/home/rust/src -v cargo-registry:/home/rust/.cargo/registry ekidd/photo-studio-musl "$@"
+    docker run --rm -i -v "$(pwd)":/home/rust/src -v cargo-registry:/home/rust/.cargo/registry photo-studio-musl "$@"
 }
 
 echo "Building static binaries using ekidd/photo-studio-musl"
