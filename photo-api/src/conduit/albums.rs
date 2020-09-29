@@ -1,5 +1,5 @@
 use crate::connection::Repo;
-use photo_core::models::{Album, ModelError, Photo, User};
+use photo_core::models::{Album, AlbumWithPhotos, ModelError, Photo, User};
 use snafu::{Backtrace, ResultExt};
 
 pub async fn create(
@@ -52,12 +52,22 @@ pub async fn find_by_id(repo: Repo, id: String) -> Result<Album> {
     .await
 }
 
-pub async fn find_all(repo: Repo, user: &User) -> Result<Vec<(Album, Vec<Photo>)>> {
+pub async fn find_all(repo: Repo, user: &User) -> Result<Vec<AlbumWithPhotos>> {
     let user = user.clone();
     repo.run(move |conn| {
         let albums = Album::find_all(&conn, &user).context(Model)?;
 
         Ok(albums)
+    })
+    .await
+}
+
+pub async fn find_main_public(repo: Repo, user: &User) -> Result<AlbumWithPhotos> {
+    let user = user.clone();
+    repo.run(move |conn| {
+        let album = Album::find_main_public(&conn, &user).context(Model)?;
+
+        Ok(album)
     })
     .await
 }

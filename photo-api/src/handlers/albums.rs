@@ -7,13 +7,51 @@ use gotham::helpers::http::response::{create_empty_response, create_response};
 use gotham::state::{FromState, State};
 use gotham_middleware_jwt::AuthorizationToken;
 use hyper::StatusCode;
-use photo_core::models::{Album, Photo};
+use photo_core::models::{Album, AlbumWithPhotos, Photo};
 use serde::{Deserialize, Serialize};
 use snafu::{Backtrace, ResultExt};
 
+#[derive(Deserialize, Serialize, StateData, StaticResponseExtender)]
+pub struct WithEmailExtractor {
+    id: String,
+}
+
+#[derive(Serialize)]
+pub struct PublicAlbumResponse {
+    album: AlbumWithPhotos,
+}
+
+pub async fn get_main_public(mut state: State) -> HandlerResult {
+    let repo = Repo::borrow_from(&state).clone();
+    let query_param = WithEmailExtractor::take_from(&mut state);
+
+    let user = match users::find_by_id(repo.clone(), query_param.id)
+        .await
+        .context(UserIssue)
+    {
+        Ok(u) => u,
+        Err(e) => return Err((state, e.into())),
+    };
+
+    let response = match albums::find_main_public(repo, &user)
+        .await
+        .context(AlbumIssue)
+    {
+        Ok(album) => {
+            let response = PublicAlbumResponse { album };
+            let body = serde_json::to_string(&response).expect("Failed to serialize album");
+
+            create_response(&state, StatusCode::OK, mime::APPLICATION_JSON, body)
+        }
+        Err(e) => return Err((state, e.into())),
+    };
+
+    Ok((state, response))
+}
+
 #[derive(Serialize)]
 pub struct AllAlbumsResponse {
-    list: Vec<(Album, Vec<Photo>)>,
+    list: Vec<AlbumWithPhotos>,
 }
 
 pub async fn all_albums(state: State) -> HandlerResult {

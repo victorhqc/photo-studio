@@ -44,6 +44,15 @@ pub async fn find_by_email(repo: Repo, u_email: String) -> Result<User> {
     .await
 }
 
+pub async fn find_by_id(repo: Repo, u_id: String) -> Result<User> {
+    repo.run(move |conn| {
+        let user = User::find_by_id(&conn, &u_id).context(Model)?;
+
+        Ok(user)
+    })
+    .await
+}
+
 pub type Result<T, E = UserError> = std::result::Result<T, E>;
 
 #[derive(Debug, Snafu)]

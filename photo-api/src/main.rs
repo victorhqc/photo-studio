@@ -110,6 +110,11 @@ fn router() -> Router {
             .to_async(google_redirect_handler);
 
         route.scope("/api", |route| {
+            route
+                .get("/public/album")
+                .with_query_string_extractor::<handlers::albums::WithEmailExtractor>()
+                .to_async(handlers::albums::get_main_public);
+
             route.with_pipeline_chain(auth_chain, |route| {
                 route.get("/me").to_async(handlers::users::me);
 
@@ -160,6 +165,10 @@ fn router() -> Router {
             route.with_pipeline_chain(cors_preflight_chain, |route| {
                 route
                     .request(OPTIONS_OR_HEAD.clone(), "/me")
+                    .to(empty_handler);
+
+                route
+                    .request(OPTIONS_OR_HEAD.clone(), "/public/album")
                     .to(empty_handler);
 
                 route

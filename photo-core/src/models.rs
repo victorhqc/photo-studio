@@ -66,6 +66,14 @@ impl User {
 
         Ok(user)
     }
+
+    pub fn find_by_id(conn: &Conn, u_id: &str) -> Result<User> {
+        use crate::schema::users::dsl::*;
+
+        let user = users.filter(id.eq(u_id)).first(conn).context(Query)?;
+
+        Ok(user)
+    }
 }
 
 #[derive(
@@ -174,7 +182,7 @@ impl Album {
     }
 
     /// Find all albums including the first picture of each album.
-    pub fn find_all(conn: &Conn, user: &User) -> Result<Vec<(Album, Vec<Photo>)>> {
+    pub fn find_all(conn: &Conn, user: &User) -> Result<Vec<AlbumWithPhotos>> {
         let albums: Vec<Album> = {
             use crate::schema::albums::dsl::*;
 
@@ -194,6 +202,25 @@ impl Album {
         let data = albums.into_iter().zip(photos).collect::<Vec<_>>();
 
         Ok(data)
+    }
+
+    pub fn find_main_public(conn: &Conn, user: &User) -> Result<AlbumWithPhotos> {
+        // TODO: Implement public & main album functionality. For now it'll return the first album.
+        let album: Album = {
+            use crate::schema::albums::dsl::*;
+
+            albums
+                .filter(deleted.eq(false))
+                .filter(user_id.eq(user.id))
+                .first(conn)
+                .context(Query)?
+        };
+
+        let photos = Photo::belonging_to(&album)
+            .load::<Photo>(conn)
+            .context(Query)?;
+
+        Ok((album, photos))
     }
 
     pub fn photos(&self, conn: &Conn) -> Result<Vec<Photo>> {
@@ -365,6 +392,8 @@ impl Photo {
 }
 
 pub type Result<T, E = ModelError> = std::result::Result<T, E>;
+
+pub type AlbumWithPhotos = (Album, Vec<Photo>);
 
 #[derive(Debug, Snafu)]
 pub enum ModelError {
