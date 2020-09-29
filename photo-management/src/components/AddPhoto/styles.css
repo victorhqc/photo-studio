@@ -54,6 +54,6 @@
 }
 
 .loading {
-  @apply absolute;
-  transform: translate3d(10rem, 10rem, 0);
+  @apply absolute z-10;
+  transform: translate3d(12rem, 10rem, 0);
 }
