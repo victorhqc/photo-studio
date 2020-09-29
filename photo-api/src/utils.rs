@@ -23,3 +23,14 @@ pub fn encode_url_component(key: String) -> String {
         })
         .collect::<String>()
 }
+
+pub fn get_allowed_emails() -> Vec<String> {
+    let allowed_emails =
+        env::var("ALLOWED_EMAILS").expect("Missing ALLOWED_EMAILS environment variable.");
+
+    allowed_emails
+        .split(",")
+        .into_iter()
+        .map(|e| String::from(e))
+        .collect()
+}

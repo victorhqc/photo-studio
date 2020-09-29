@@ -1,5 +1,6 @@
 use crate::auth::Profile;
 use crate::connection::Repo;
+use crate::utils::get_allowed_emails;
 use photo_core::models::{Album, ModelError, User};
 use snafu::{Backtrace, ResultExt};
 
@@ -10,6 +11,12 @@ pub async fn find_or_create<T: Profile>(repo: Repo, profile: T) -> Result<User> 
         move |conn| match User::find_by_email(&conn, &new_user.email).context(Model) {
             Ok(u) => Ok(u),
             Err(_) => {
+                let allowed = get_allowed_emails();
+                let index = allowed.iter().position(|x| x == &new_user.email);
+                if index.is_none() {
+                    return Err(UserError::UserNotAllowed);
+                }
+
                 debug!("New User, creating {}", &new_user.email);
                 let user = new_user.insert(&conn).unwrap();
 
@@ -47,4 +54,7 @@ pub enum UserError {
         cause: ModelError,
         backtrace: Backtrace,
     },
+
+    #[snafu(display("User is not allowed"))]
+    UserNotAllowed,
 }
