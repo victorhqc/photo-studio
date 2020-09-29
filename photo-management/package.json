@@ -50,7 +50,15 @@
     "preinstall": "npx npm-force-resolutions"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "rules": {
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          "argsIgnorePattern": "^_"
+        }
+      ]
+    }
   },
   "resolutions": {
     "**/@typescript-eslint/eslint-plugin": "^4.0.0",
