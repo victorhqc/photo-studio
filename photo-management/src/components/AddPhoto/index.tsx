@@ -81,22 +81,23 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
             <div
               className="add-photo__preview"
               style={{ backgroundImage: `url(${imagePreview.base64})` }}
-            />
-            <div className="add-photo__confirm-info">
-              <div className="add-photo__btns-wrapper">
-                <button
-                  className="add-photo__confirm-btn add-photo__confirm-btn--accept"
-                  onClick={handleConfirm}
-                  disabled={status === 'loading'}
-                >
-                  Upload
-                </button>
-                <button
-                  className="add-photo__confirm-btn add-photo__confirm-btn--cancel"
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </button>
+            >
+              <div className="add-photo__confirm-info">
+                <div className="add-photo__btns-wrapper">
+                  <button
+                    className="add-photo__confirm-btn add-photo__confirm-btn--accept"
+                    onClick={handleConfirm}
+                    disabled={status === 'loading'}
+                  >
+                    Upload
+                  </button>
+                  <button
+                    className="add-photo__confirm-btn add-photo__confirm-btn--cancel"
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
           </>
