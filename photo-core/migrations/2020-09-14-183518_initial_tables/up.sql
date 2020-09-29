@@ -15,7 +15,7 @@ CREATE TABLE albums (
   updated_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
   deleted BOOLEAN NOT NULL DEFAULT false,
   FOREIGN KEY (user_id)
-    REFERENCES albums (id)
+    REFERENCES users (id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
