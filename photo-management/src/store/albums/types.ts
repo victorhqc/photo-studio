@@ -25,8 +25,6 @@ export type Photo = {
   indexInAlbum: number;
   src: string;
   mainColor: string;
-  title: string;
-  description: string | null;
   createdAt: number;
   updatedAt: number;
   deleted: boolean;

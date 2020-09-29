@@ -13,16 +13,11 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
     base64: ArrayBuffer | string;
     color: string;
   } | null>(null);
-  const [form, setForm] = useState<{ title: string; description: string }>({
-    title: '',
-    description: '',
-  });
 
   useEffect(() => {
     if (status === 'done' && inputRef.current) {
       inputRef.current.value = '';
       setImagePreview(null);
-      setForm({ title: '', description: '' });
     }
   }, [status]);
 
@@ -59,11 +54,9 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
       addPhoto({
         img,
         color: imagePreview.color,
-        title: form.title,
-        description: form.description || null,
       });
     },
-    [addPhoto, imagePreview, form]
+    [addPhoto, imagePreview]
   );
 
   const handleCancel = useCallback((e: FormEvent) => {
@@ -73,7 +66,6 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
 
     inputRef.current.value = '';
     setImagePreview(null);
-    setForm({ title: '', description: '' });
   }, []);
 
   return (
@@ -91,38 +83,11 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
               style={{ backgroundImage: `url(${imagePreview.base64})` }}
             />
             <div className="add-photo__confirm-info">
-              <h1 className="add-photo__confirm-title">Describe the picture</h1>
-              <div className="input__wrapper">
-                <label className="input__label" htmlFor="name">
-                  Name
-                </label>
-                <input
-                  className="input input--text"
-                  id="name"
-                  name="name"
-                  type="text"
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                />
-              </div>
-              <div className="input__wrapper">
-                <label className="input__label" htmlFor="description">
-                  Description
-                </label>
-                <textarea
-                  className="input input--textarea"
-                  rows={4}
-                  id="description"
-                  name="description"
-                  value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                ></textarea>
-              </div>
               <div className="add-photo__btns-wrapper">
                 <button
                   className="add-photo__confirm-btn add-photo__confirm-btn--accept"
                   onClick={handleConfirm}
-                  disabled={status === 'loading' || !form.title}
+                  disabled={status === 'loading'}
                 >
                   Upload
                 </button>

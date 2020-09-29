@@ -54,8 +54,6 @@ function* handleAddPhoto(action: ActionType<typeof addPhoto.request>) {
       albumId: album.id,
       src: response.photoUrl,
       mainColor: action.payload.color,
-      title: action.payload.title,
-      description: action.payload.description,
     });
     yield put(addPhoto.success(photo));
   } catch (e) {
