@@ -49,17 +49,6 @@
     "test": "craco test",
     "preinstall": "npx npm-force-resolutions"
   },
-  "eslintConfig": {
-    "extends": "react-app",
-    "rules": {
-      "@typescript-eslint/no-unused-vars": [
-        "warn",
-        {
-          "argsIgnorePattern": "^_"
-        }
-      ]
-    }
-  },
   "resolutions": {
     "**/@typescript-eslint/eslint-plugin": "^4.0.0",
     "**/@typescript-eslint/parser": "^4.0.0"

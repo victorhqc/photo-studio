@@ -1,5 +1,5 @@
 import { call, put, select } from 'typed-redux-saga';
-import { takeEvery, select as _select } from 'redux-saga/effects';
+import { takeEvery } from 'redux-saga/effects';
 import { ActionMatchingPattern as ActionType } from '@redux-saga/types';
 import { fetchAllAlbums, fetchAlbumPhotos, addPhoto, openAlbum, deletePhoto } from './actions';
 import { selectOpenedAlbumOrFail, selectAlbumById } from './selectors';
@@ -12,7 +12,7 @@ export default function* albumsSaga() {
   yield takeEvery(deletePhoto.request, handleDeletePhoto);
 }
 
-function* handlefetchAllAlbums(action: ActionType<typeof fetchAllAlbums.request>) {
+function* handlefetchAllAlbums() {
   try {
     const api = getApi();
 
@@ -26,7 +26,6 @@ function* handlefetchAllAlbums(action: ActionType<typeof fetchAllAlbums.request>
 
 function* handleFetchAlbumPhotos(action: ActionType<typeof fetchAlbumPhotos.request>) {
   try {
-    // @ts-ignore
     const album = yield* select(selectAlbumById, action.payload);
     if (!album) {
       throw new Error('Album does not exist');
