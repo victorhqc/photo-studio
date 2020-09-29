@@ -25,8 +25,6 @@ pub struct NewPhotoRequest {
     pub s3_id: String,
     pub src: String,
     pub main_color: String,
-    pub title: String,
-    pub description: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -77,8 +75,6 @@ pub async fn new_photo(mut state: State) -> HandlerResult {
         req_data.s3_id,
         req_data.src,
         req_data.main_color,
-        req_data.title,
-        req_data.description,
     )
     .await
     {
@@ -107,8 +103,6 @@ pub struct PhotoPathExtractor {
 #[serde(rename_all = "camelCase")]
 pub struct UpdatePhotoRequest {
     pub index_in_album: i32,
-    pub title: String,
-    pub description: Option<String>,
 }
 
 pub async fn update_photo(mut state: State) -> HandlerResult {
@@ -127,15 +121,9 @@ pub async fn update_photo(mut state: State) -> HandlerResult {
         Err(e) => return Err((state, e.into())),
     };
 
-    let response = match photos::update(
-        repo,
-        &photo,
-        req_data.index_in_album,
-        req_data.title,
-        req_data.description,
-    )
-    .await
-    .context(PhotoIssue)
+    let response = match photos::update(repo, &photo, req_data.index_in_album)
+        .await
+        .context(PhotoIssue)
     {
         Ok(photo) => {
             let response = PhotoResponse { photo };
