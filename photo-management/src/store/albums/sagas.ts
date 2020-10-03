@@ -1,7 +1,14 @@
 import { call, put, select } from 'typed-redux-saga';
 import { takeEvery } from 'redux-saga/effects';
 import { ActionMatchingPattern as ActionType } from '@redux-saga/types';
-import { fetchAllAlbums, fetchAlbumPhotos, addPhoto, openAlbum, deletePhoto } from './actions';
+import {
+  fetchAllAlbums,
+  fetchAlbumPhotos,
+  addPhoto,
+  openAlbum,
+  deletePhoto,
+  updatePhoto,
+} from './actions';
 import { selectOpenedAlbumOrFail, selectAlbumById } from './selectors';
 import { getApi } from '../../api';
 
@@ -10,6 +17,7 @@ export default function* albumsSaga() {
   yield takeEvery(fetchAlbumPhotos.request, handleFetchAlbumPhotos);
   yield takeEvery(addPhoto.request, handleAddPhoto);
   yield takeEvery(deletePhoto.request, handleDeletePhoto);
+  yield takeEvery(updatePhoto.request, handleUpdatePhoto);
 }
 
 function* handlefetchAllAlbums() {
@@ -58,6 +66,22 @@ function* handleAddPhoto(action: ActionType<typeof addPhoto.request>) {
     yield put(addPhoto.success(photo));
   } catch (e) {
     yield put(addPhoto.failure(e));
+  }
+}
+
+function* handleUpdatePhoto(action: ActionType<typeof updatePhoto.request>) {
+  try {
+    const api = getApi();
+
+    const { photo } = yield* call(api.updatePhoto, {
+      id: action.payload.id,
+      isFavorite: action.payload.isFavorite,
+      indexInAlbum: 0,
+    });
+
+    yield put(updatePhoto.success(photo));
+  } catch (e) {
+    yield put(updatePhoto.failure(e));
   }
 }
 

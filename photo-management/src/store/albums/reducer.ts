@@ -90,6 +90,24 @@ export const openedAlbum: Reducer<AlbumOpenedState, AlbumAction> = (
         upload: 'error',
       };
 
+    case getType(actions.updatePhoto.success): {
+      if (!state.data) return state;
+
+      const index = state.data[1].findIndex((p) => p.id === action.payload.id);
+
+      return {
+        ...state,
+        data: [
+          state.data[0],
+          [
+            ...state.data[1].slice(0, index),
+            action.payload,
+            ...state.data[1].slice(index + 1, state.data[1].length),
+          ],
+        ],
+      };
+    }
+
     case getType(actions.deletePhoto.request): {
       if (!state.data) {
         return state;

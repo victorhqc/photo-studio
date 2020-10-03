@@ -23,5 +23,9 @@
 }
 
 .album-photo__delete {
-  @apply absolute text-black right-0 top-0 cursor-pointer;
+  @apply absolute text-black right-0 top-0 cursor-pointer p-2;
+}
+
+.album-photo__is-favorite {
+  @apply absolute text-black top-0 left-0 cursor-pointer p-2;
 }

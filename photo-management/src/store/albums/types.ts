@@ -25,6 +25,7 @@ export type Photo = {
   indexInAlbum: number;
   src: string;
   mainColor: string;
+  isFavorite: boolean;
   createdAt: number;
   updatedAt: number;
   deleted: boolean;

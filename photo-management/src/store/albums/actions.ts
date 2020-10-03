@@ -25,6 +25,13 @@ export const addPhoto = createAsyncAction(
   'albums/add_photo_cancel'
 )<{ img: File; color: string }, Photo, Error, void>();
 
+export const updatePhoto = createAsyncAction(
+  'albums/update_photo',
+  'albums/update_photo_success',
+  'albums/update_photo_error',
+  'albums/update_photo_cancel'
+)<{ id: string; isFavorite: boolean }, Photo, Error, void>();
+
 export const deletePhoto = createAsyncAction(
   'albums/delete_photo',
   'albums/delete_photo_success',

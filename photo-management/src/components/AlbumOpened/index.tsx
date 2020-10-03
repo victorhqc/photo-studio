@@ -21,10 +21,9 @@ const AlbumOpened: FC<Props> = ({ albumId, fetchAlbumPhotos, albumWithPhotos, ..
           <PhotoComponent
             key={photo.id}
             id={photo.id}
-            title={photo.title}
-            description={photo.description}
             src={photo.src}
             mainColor={photo.mainColor}
+            isFavorite={photo.isFavorite}
           />
         ))}
       </PhotoGrid>

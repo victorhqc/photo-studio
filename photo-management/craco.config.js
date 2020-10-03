@@ -12,7 +12,7 @@ module.exports = {
       extends: 'react-app',
       overrides: [
         {
-          files: ['**/*.tsx'],
+          files: ['**/*.tsx', '**/*.ts'],
           rules: {
             '@typescript-eslint/no-unused-vars': [
               'warn',
@@ -21,6 +21,8 @@ module.exports = {
                 varsIgnorePattern: '^_',
               },
             ],
+            'no-use-before-define': 'off',
+            '@typescript-eslint/no-use-before-define': 'off',
           },
         },
       ],

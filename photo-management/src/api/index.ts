@@ -89,6 +89,22 @@ export const ApiFactory = {
     return result;
   },
 
+  put: async <T>(store: Store, path: string, data: object): Promise<T> => {
+    const result = await ApiFactory.request<T>(store, path, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!result) {
+      throw new Error('Could not post data');
+    }
+
+    return result;
+  },
+
   delete: async <T>(store: Store, path: string): Promise<T> => {
     const result = await ApiFactory.request<T>(store, path, {
       method: 'DELETE',
@@ -131,6 +147,16 @@ export const ApiFactory = {
           mainColor,
         });
       },
+      updatePhoto: function updatePhoto({
+        id,
+        indexInAlbum,
+        isFavorite,
+      }: UpdatePhotoArgs): Promise<{ photo: Photo }> {
+        return ApiFactory.put(store, `/api/photo/${id}`, {
+          indexInAlbum,
+          isFavorite,
+        });
+      },
       deletePhoto: function deletePhoto({ id }: { id: string }) {
         return ApiFactory.delete(store, `/api/photo/${id}`);
       },
@@ -166,4 +192,10 @@ type AddPhotoArgs = {
   albumId: string;
   src: string;
   mainColor: string;
+};
+
+type UpdatePhotoArgs = {
+  id: string;
+  indexInAlbum: number;
+  isFavorite: boolean;
 };
