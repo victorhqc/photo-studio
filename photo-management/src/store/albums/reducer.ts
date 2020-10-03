@@ -84,6 +84,7 @@ export const openedAlbum: Reducer<AlbumOpenedState, AlbumAction> = (
       return {
         ...state,
         data: [state.data[0], [...state.data[1], action.payload]],
+        needsRebuild: true,
         upload: 'done',
       };
     case getType(actions.addPhoto.failure):
