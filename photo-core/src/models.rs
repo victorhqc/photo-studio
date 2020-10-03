@@ -269,6 +269,7 @@ pub struct Photo {
     pub s3_id: String,
     pub src: String,
     pub main_color: String,
+    pub is_favorite: bool,
     #[serde(with = "ts_seconds")]
     pub created_at: NaiveDateTime,
     #[serde(with = "ts_seconds")]
@@ -280,6 +281,7 @@ pub struct Photo {
 #[table_name = "photos"]
 struct UpdatePhoto {
     pub index_in_album: i32,
+    pub is_favorite: bool,
     #[serde(with = "ts_seconds")]
     pub updated_at: NaiveDateTime,
 }
@@ -292,6 +294,7 @@ impl Photo {
         s3_id: String,
         src: String,
         main_color: String,
+        is_favorite: bool,
     ) -> Self {
         let now = Utc::now().naive_utc();
 
@@ -303,6 +306,7 @@ impl Photo {
             s3_id,
             src: src.clone(),
             main_color,
+            is_favorite,
             created_at: now,
             updated_at: now,
             deleted: false,
@@ -324,8 +328,8 @@ impl Photo {
         Ok(photo)
     }
 
-    pub fn update(&self, conn: &Conn, index_in_album: i32) -> Result<Photo> {
-        let updated = self.prepare_update(index_in_album);
+    pub fn update(&self, conn: &Conn, index_in_album: i32, is_favorite: bool) -> Result<Photo> {
+        let updated = self.prepare_update(index_in_album, is_favorite);
         let photo: Photo = {
             use crate::schema::photos::dsl::*;
 
@@ -360,11 +364,12 @@ impl Photo {
         Ok(photo)
     }
 
-    fn prepare_update(&self, index_in_album: i32) -> UpdatePhoto {
+    fn prepare_update(&self, index_in_album: i32, is_favorite: bool) -> UpdatePhoto {
         let now = Utc::now().naive_utc();
 
         UpdatePhoto {
             index_in_album,
+            is_favorite,
             updated_at: now,
         }
     }

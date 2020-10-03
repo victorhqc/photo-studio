@@ -10,11 +10,20 @@ pub async fn create(
     s3_id: String,
     src: String,
     main_color: String,
+    is_favorite: bool,
 ) -> Result<Photo> {
     let album = album.clone();
     let user = user.clone();
     repo.run(move |conn| {
-        let photo = Photo::new(&album, &user, index_in_album, s3_id, src, main_color);
+        let photo = Photo::new(
+            &album,
+            &user,
+            index_in_album,
+            s3_id,
+            src,
+            main_color,
+            is_favorite,
+        );
         let photo = photo.insert(&conn).context(Model)?;
 
         Ok(photo)
@@ -22,10 +31,17 @@ pub async fn create(
     .await
 }
 
-pub async fn update(repo: Repo, photo: &Photo, index_in_album: i32) -> Result<Photo> {
+pub async fn update(
+    repo: Repo,
+    photo: &Photo,
+    index_in_album: i32,
+    is_favorite: bool,
+) -> Result<Photo> {
     let photo = photo.clone();
     repo.run(move |conn| {
-        let photo = photo.update(&conn, index_in_album).context(Model)?;
+        let photo = photo
+            .update(&conn, index_in_album, is_favorite)
+            .context(Model)?;
 
         Ok(photo)
     })

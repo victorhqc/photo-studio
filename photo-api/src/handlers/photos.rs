@@ -75,6 +75,7 @@ pub async fn new_photo(mut state: State) -> HandlerResult {
         req_data.s3_id,
         req_data.src,
         req_data.main_color,
+        false,
     )
     .await
     {
@@ -103,6 +104,7 @@ pub struct PhotoPathExtractor {
 #[serde(rename_all = "camelCase")]
 pub struct UpdatePhotoRequest {
     pub index_in_album: i32,
+    pub is_favorite: bool,
 }
 
 pub async fn update_photo(mut state: State) -> HandlerResult {
@@ -121,7 +123,7 @@ pub async fn update_photo(mut state: State) -> HandlerResult {
         Err(e) => return Err((state, e.into())),
     };
 
-    let response = match photos::update(repo, &photo, req_data.index_in_album)
+    let response = match photos::update(repo, &photo, req_data.index_in_album, req_data.is_favorite)
         .await
         .context(PhotoIssue)
     {

@@ -19,6 +19,7 @@ table! {
         s3_id -> Text,
         src -> Text,
         main_color -> Text,
+        is_favorite -> Bool,
         created_at -> Timestamp,
         updated_at -> Timestamp,
         deleted -> Bool,
@@ -38,4 +39,8 @@ table! {
 joinable!(photos -> albums (album_id));
 joinable!(photos -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(albums, photos, users,);
+allow_tables_to_appear_in_same_query!(
+    albums,
+    photos,
+    users,
+);
