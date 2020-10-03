@@ -12,7 +12,11 @@ export const ApiFactory = {
     return process.env.REACT_APP_API_URL || 'REACT_APP_API_URL is not configured';
   },
 
-  request: async <T>(store: Store, path: string, options: RequestOptions): Promise<T | null> => {
+  request: async <T>(
+    store: Store,
+    path: string,
+    { emptyResponse, ...options }: RequestOptions
+  ): Promise<T | null> => {
     const token = selectToken(store.getState());
 
     if (!token) {
@@ -39,6 +43,10 @@ export const ApiFactory = {
 
     if (res.status >= 500) {
       throw new Error(`Something went wrong: ${res.json()}`);
+    }
+
+    if (emptyResponse) {
+      return null;
     }
 
     return res.json();
@@ -105,14 +113,11 @@ export const ApiFactory = {
     return result;
   },
 
-  delete: async <T>(store: Store, path: string): Promise<T> => {
+  delete: async <T>(store: Store, path: string): Promise<T | null> => {
     const result = await ApiFactory.request<T>(store, path, {
       method: 'DELETE',
+      emptyResponse: true,
     });
-
-    if (!result) {
-      throw new Error('Could not complete delete request');
-    }
 
     return result;
   },
@@ -185,6 +190,7 @@ type RequestOptions = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: Blob | BufferSource | FormData | URLSearchParams | ReadableStream<Uint8Array> | string;
   headers?: Record<string, string>;
+  emptyResponse?: boolean;
 };
 
 type AddPhotoArgs = {
