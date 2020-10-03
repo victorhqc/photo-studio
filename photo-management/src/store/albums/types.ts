@@ -4,6 +4,7 @@ export type AlbumsState = AsyncData<AlbumWithPhotos[]>;
 
 export type AlbumOpenedState = AsyncData<AlbumWithPhotos> & {
   upload: AsyncStatus;
+  needsRebuild: boolean;
 };
 
 export type AlbumWithPhotos = [Album, Photo[]];

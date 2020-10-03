@@ -8,9 +8,11 @@ import {
   openAlbum,
   deletePhoto,
   updatePhoto,
+  buildApplication,
 } from './actions';
 import { selectOpenedAlbumOrFail, selectAlbumById } from './selectors';
 import { getApi } from '../../api';
+import { rebuildApplication } from '../../utils/netlify';
 
 export default function* albumsSaga() {
   yield takeEvery(fetchAllAlbums.request, handlefetchAllAlbums);
@@ -18,6 +20,7 @@ export default function* albumsSaga() {
   yield takeEvery(addPhoto.request, handleAddPhoto);
   yield takeEvery(deletePhoto.request, handleDeletePhoto);
   yield takeEvery(updatePhoto.request, handleUpdatePhoto);
+  yield takeEvery(buildApplication, handleBuildApplication);
 }
 
 function* handlefetchAllAlbums() {
@@ -91,8 +94,16 @@ function* handleDeletePhoto(action: ActionType<typeof deletePhoto.request>) {
 
     yield* call(api.deletePhoto, { id: action.payload });
 
-    yield put(deletePhoto.success());
+    yield put(deletePhoto.success(action.payload));
   } catch (e) {
     yield put(deletePhoto.failure(e));
+  }
+}
+
+function* handleBuildApplication() {
+  try {
+    yield call(rebuildApplication);
+  } catch (e) {
+    console.warn('Could not build application', e);
   }
 }

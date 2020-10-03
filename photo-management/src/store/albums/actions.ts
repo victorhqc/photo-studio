@@ -37,4 +37,6 @@ export const deletePhoto = createAsyncAction(
   'albums/delete_photo_success',
   'albums/delete_photo_error',
   'albums/delete_photo_abort'
-)<string, void, Error, void>();
+)<string, string, Error, void>();
+
+export const buildApplication = createAction('albums/build_app')<void>();

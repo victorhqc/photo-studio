@@ -29,6 +29,7 @@ const initialOpenedAlbum: AlbumOpenedState = {
   status: 'idle',
   data: null,
   upload: 'idle',
+  needsRebuild: false,
 };
 
 export const openedAlbum: Reducer<AlbumOpenedState, AlbumAction> = (
@@ -77,6 +78,7 @@ export const openedAlbum: Reducer<AlbumOpenedState, AlbumAction> = (
         return {
           ...state,
           upload: 'done',
+          needsRebuild: true,
         };
 
       return {
@@ -105,10 +107,11 @@ export const openedAlbum: Reducer<AlbumOpenedState, AlbumAction> = (
             ...state.data[1].slice(index + 1, state.data[1].length),
           ],
         ],
+        needsRebuild: true,
       };
     }
 
-    case getType(actions.deletePhoto.request): {
+    case getType(actions.deletePhoto.success): {
       if (!state.data) {
         return state;
       }
@@ -123,8 +126,15 @@ export const openedAlbum: Reducer<AlbumOpenedState, AlbumAction> = (
       return {
         ...state,
         data: [state.data[0], photos],
+        needsRebuild: true,
       };
     }
+
+    case getType(actions.buildApplication):
+      return {
+        ...state,
+        needsRebuild: false,
+      };
     default:
       return state;
   }

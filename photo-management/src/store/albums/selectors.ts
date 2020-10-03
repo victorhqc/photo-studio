@@ -41,3 +41,6 @@ export const selectOpenedAlbumOrFail = (state: ApplicationState) => {
 export const selectUploadStatus = (state: ApplicationState) => {
   return state.albums.openedAlbum.upload;
 };
+
+export const selectNeedsRebuild = (state: ApplicationState) =>
+  state.albums.openedAlbum.needsRebuild;

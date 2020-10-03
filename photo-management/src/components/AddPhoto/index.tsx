@@ -2,12 +2,17 @@ import React, { FC, FormEvent, useCallback, useEffect, useRef, useState } from '
 import { connect } from 'react-redux';
 import { PlusIcon, SyncIcon } from '@primer/octicons-react';
 import { ApplicationState } from '../../store';
-import { addPhoto, selectUploadStatus } from '../../store/albums';
+import {
+  addPhoto,
+  buildApplication,
+  selectUploadStatus,
+  selectNeedsRebuild,
+} from '../../store/albums';
 import { getColorFrom } from '../../utils/chameleon';
 import PhotoGrid from '../PhotoGrid';
 import './styles.css';
 
-const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
+const AddPhoto: FC<Props> = ({ addPhoto, buildApplication, needsRebuild, status }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [imagePreview, setImagePreview] = useState<{
     base64: ArrayBuffer | string;
@@ -20,6 +25,21 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
       setImagePreview(null);
     }
   }, [status]);
+
+  useEffect(() => {
+    const handleUnload = (e: BeforeUnloadEvent) => {
+      if (!needsRebuild) return;
+
+      e.preventDefault();
+      e.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload);
+    };
+  }, [needsRebuild]);
 
   const handleClick = useCallback((e: FormEvent) => {
     e.preventDefault();
@@ -68,6 +88,15 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
     setImagePreview(null);
   }, []);
 
+  const handleRebuild = useCallback(
+    (e: FormEvent) => {
+      e.preventDefault();
+
+      buildApplication();
+    },
+    [buildApplication]
+  );
+
   return (
     <form className="add-photo">
       <PhotoGrid>
@@ -114,6 +143,21 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
           className="add-photo__input"
           onChange={handleFileChange}
         />
+        <div className="add-photo__rebuild-wrapper">
+          <h2 className="add-photo__rebuild-title">
+            {needsRebuild ? 'Rebuild Website' : 'No rebuild is needed'}
+          </h2>
+          <p className="add-photo__rebuild-text">
+            {needsRebuild
+              ? 'To reflect the changes in photos, a rebuild in the website is needed.'
+              : 'No changes done in photos, so no rebuild is needed in the website.'}
+          </p>
+          {needsRebuild && (
+            <button className="add-photo__rebuild-button" onClick={handleRebuild}>
+              Rebuild Website
+            </button>
+          )}
+        </div>
       </PhotoGrid>
     </form>
   );
@@ -121,10 +165,12 @@ const AddPhoto: FC<Props> = ({ addPhoto, status }) => {
 
 const mapDispatchToProps = {
   addPhoto: addPhoto.request,
+  buildApplication,
 };
 
 const mapStateToProps = (state: ApplicationState) => ({
   status: selectUploadStatus(state),
+  needsRebuild: selectNeedsRebuild(state),
 });
 
 type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
