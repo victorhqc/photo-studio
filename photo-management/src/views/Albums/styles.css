@@ -1,0 +1,38 @@
+.albums__title {
+  @apply text-2xl mt-4 mb-6;
+}
+
+.albums__list {
+  @apply grid grid-cols-4;
+}
+
+.album__wrapper {
+  @apply w-full;
+}
+
+.album__photos {
+  @apply h-64 w-64;
+}
+
+.album__photo__wrapper {
+  @apply h-full w-full bg-white shadow-sm rounded p-2 cursor-pointer;
+}
+
+.album__photo {
+  @apply h-full w-full bg-cover bg-center;
+}
+
+.album__photo:nth-child(1) {
+}
+
+.album__photo:nth-child(2) {
+  transform: rotate(22.5deg);
+}
+
+.album__photo:nth-child(3) {
+  transform: rotate(45deg);
+}
+
+.album__name {
+  @apply text-xl capitalize;
+}
