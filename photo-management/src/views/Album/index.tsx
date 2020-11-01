@@ -1,37 +1,57 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
+import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { withRouter, RouteComponentProps } from 'react-router';
 import { ApplicationState } from '../../store';
-import { selectAlbums } from '../../store/albums';
-import Album from '../../components/Album';
+import { openAlbum, fetchAllAlbums, selectAlbumById, selectAlbums } from '../../store/albums';
 import AlbumOpened from '../../components/AlbumOpened';
 import './styles.css';
 
-const HomeView: FC<Props> = ({ albums }) => {
-  if (albums.length === 0) {
+const HomeView: FC<Props> = ({ openAlbum, fetchAllAlbums, match, album, albumsLength }) => {
+  const {
+    params: { id },
+  } = match;
+
+  useEffect(() => {
+    if (!album) {
+      return;
+    }
+
+    openAlbum(album[0]);
+  }, [id, openAlbum, album]);
+
+  useEffect(() => {
+    if (albumsLength === 0) {
+      fetchAllAlbums();
+    }
+  }, [fetchAllAlbums, albumsLength]);
+
+  if (!album) {
     return null;
   }
 
-  if (albums.length === 1) {
-    return (
-      <div className="home__default-album">
-        <AlbumOpened albumId={albums[0][0].id} />
-      </div>
-    );
-  }
-
   return (
-    <div data-testid="home">
-      {albums.map(([album]) => (
-        <Album key={album.id} data={album} />
-      ))}
+    <div className="home__default-album">
+      <AlbumOpened albumId={album[0].id} />
     </div>
   );
 };
 
-const mapStateToProps = (state: ApplicationState) => ({
-  albums: selectAlbums(state),
+const mapStateToProps = (
+  state: ApplicationState,
+  { match }: RouteComponentProps<{ id: string }>
+) => ({
+  album: selectAlbumById(state, match.params.id),
+  albumsLength: selectAlbums(state).length,
 });
 
-type Props = ReturnType<typeof mapStateToProps>;
+const mapDispatchToProps = {
+  fetchAllAlbums: fetchAllAlbums.request,
+  openAlbum,
+};
 
-export default connect(mapStateToProps)(HomeView);
+type Props = ReturnType<typeof mapStateToProps> &
+  typeof mapDispatchToProps &
+  RouteComponentProps<{ id: string }>;
+
+export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(HomeView);

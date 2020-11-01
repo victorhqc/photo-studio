@@ -5,12 +5,11 @@ import {
   fetchAllAlbums,
   fetchAlbumPhotos,
   addPhoto,
-  openAlbum,
   deletePhoto,
   updatePhoto,
   buildApplication,
 } from './actions';
-import { selectOpenedAlbumOrFail, selectAlbumById } from './selectors';
+import { selectOpenedAlbumOrFail } from './selectors';
 import { getApi } from '../../api';
 import { rebuildApplication } from '../../utils/netlify';
 
@@ -37,12 +36,6 @@ function* handlefetchAllAlbums() {
 
 function* handleFetchAlbumPhotos(action: ActionType<typeof fetchAlbumPhotos.request>) {
   try {
-    const album = yield* select(selectAlbumById, action.payload);
-    if (!album) {
-      throw new Error('Album does not exist');
-    }
-    yield put(openAlbum(album[0]));
-
     const api = getApi();
     const { list: photos } = yield* call(api.getAlbumPhotos, action.payload);
 
