@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { SignOutIcon } from '@primer/octicons-react';
 import { ApplicationState } from '../../store';
 import { selectAuthenticatedUser, logout } from '../../store/auth';
@@ -11,6 +12,13 @@ const Header: FC<Props> = ({ user, logout }) => (
       <img className="header__img" src={user.picture} alt="Profile" referrerPolicy="no-referrer" />
       <p className="header__email">{user.email}</p>
     </div>
+    <nav className="header__nav">
+      <ul>
+        <li>
+          <Link to="/">Albums</Link>
+        </li>
+      </ul>
+    </nav>
     <button className="header__logout" onClick={() => logout()}>
       <span className="header__logout-icon">
         <SignOutIcon verticalAlign="middle" />

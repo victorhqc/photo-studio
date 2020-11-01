@@ -3,7 +3,7 @@
 }
 
 .header__user-info {
-  @apply flex items-center col-span-4;
+  @apply flex items-center col-span-2;
 }
 
 .header__img {
@@ -16,4 +16,8 @@
 
 .header__logout-icon {
   @apply mr-2;
+}
+
+.header__nav {
+  @apply col-span-4 mt-2;
 }
