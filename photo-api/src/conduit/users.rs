@@ -22,8 +22,8 @@ pub async fn find_or_create<T: Profile>(repo: Repo, profile: T) -> Result<User> 
 
                 let default_album = Album::new(
                     &user,
-                    String::from("web"),
-                    Some(String::from("Album for website")),
+                    String::from("weddings"),
+                    Some(String::from("Wedding pictures")),
                 );
                 debug!("Creating default album");
                 default_album.insert(&conn).unwrap();

@@ -74,6 +74,12 @@ impl User {
 
         Ok(user)
     }
+
+    pub fn find_all(conn: &Conn) -> Result<Vec<User>> {
+        let users: Vec<User> = users::table.load(conn).context(Query)?;
+
+        Ok(users)
+    }
 }
 
 #[derive(

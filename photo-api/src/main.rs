@@ -39,6 +39,7 @@ use gotham_middleware_diesel::{self, DieselMiddleware};
 use gotham_middleware_jwt::JWTMiddleware;
 use hyper::Method;
 use photo_core::connection::{connect, db_migrate, get_database_url};
+use photo_core::custom_migrations::apply_custom_migrations;
 
 lazy_static! {
     pub static ref OPTIONS_OR_HEAD: Vec<Method> = {
@@ -59,9 +60,12 @@ fn main() {
     pretty_env_logger::init();
 
     let url = get_database_url(None);
-    let conn = connect(Some(url)).unwrap();
+    let conn = connect(Some(url.clone())).unwrap();
     info!("Running migrations");
     db_migrate(&conn).unwrap();
+
+    info!("Running custom migrations");
+    apply_custom_migrations(Some(url)).unwrap();
 
     let port = std::env::var("PORT").unwrap_or(String::from("7878"));
     let addr = format!("127.0.0.1:{}", port);

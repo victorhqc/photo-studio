@@ -11,6 +11,14 @@ table! {
 }
 
 table! {
+    custom_migrations (id) {
+        id -> Text,
+        name -> Text,
+        created_at -> Timestamp,
+    }
+}
+
+table! {
     photos (id) {
         id -> Text,
         album_id -> Text,
@@ -39,8 +47,4 @@ table! {
 joinable!(photos -> albums (album_id));
 joinable!(photos -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(
-    albums,
-    photos,
-    users,
-);
+allow_tables_to_appear_in_same_query!(albums, custom_migrations, photos, users,);

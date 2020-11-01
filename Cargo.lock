@@ -1748,6 +1748,7 @@ dependencies = [
  "futures 0.1.29",
  "http 0.2.1",
  "hyper 0.13.7",
+ "lazy_static",
  "log",
  "openssl",
  "pretty_env_logger",
