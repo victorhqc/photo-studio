@@ -199,11 +199,17 @@ impl Album {
                 .context(Query)?
         };
 
-        let photos = Photo::belonging_to(&albums)
-            .limit(1)
-            .load::<Photo>(conn)
-            .context(Query)?
-            .grouped_by(&albums);
+        let photos: Vec<Vec<Photo>> = albums
+            .iter()
+            .map(|album| {
+                let photos = Photo::belonging_to(album)
+                    .limit(1)
+                    .load::<Photo>(conn)
+                    .unwrap();
+
+                photos
+            })
+            .collect();
 
         let data = albums.into_iter().zip(photos).collect::<Vec<_>>();
 
