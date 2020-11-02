@@ -125,6 +125,11 @@ fn router() -> Router {
                 .with_path_extractor::<handlers::albums::WithNameExtractor>()
                 .to_async(handlers::albums::get_album_by_name);
 
+            route
+                .post("/public/book_me")
+                .with_query_string_extractor::<handlers::book_me::WithIdExtractor>()
+                .to_async(handlers::book_me::book_me);
+
             route.with_pipeline_chain(auth_chain, |route| {
                 route.get("/me").to_async(handlers::users::me);
 
@@ -189,6 +194,10 @@ fn router() -> Router {
 
                 route
                     .request(OPTIONS_OR_HEAD.clone(), "/public/album/:name")
+                    .to(empty_handler);
+
+                route
+                    .request(OPTIONS_OR_HEAD.clone(), "/public/book_me")
                     .to(empty_handler);
 
                 route

@@ -422,7 +422,7 @@ impl Photo {
 pub struct BookMe {
     id: Uuid,
     user_id: Uuid,
-    email: String,
+    pub email: String,
 }
 
 impl BookMe {
