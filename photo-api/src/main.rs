@@ -116,8 +116,14 @@ fn router() -> Router {
         route.scope("/api", |route| {
             route
                 .get("/public/album")
-                .with_query_string_extractor::<handlers::albums::WithEmailExtractor>()
+                .with_query_string_extractor::<handlers::albums::WithIdExtractor>()
                 .to_async(handlers::albums::get_main_public);
+
+            route
+                .get("/public/album/:name")
+                .with_query_string_extractor::<handlers::albums::WithIdExtractor>()
+                .with_path_extractor::<handlers::albums::WithNameExtractor>()
+                .to_async(handlers::albums::get_album_by_name);
 
             route.with_pipeline_chain(auth_chain, |route| {
                 route.get("/me").to_async(handlers::users::me);
@@ -173,6 +179,10 @@ fn router() -> Router {
 
                 route
                     .request(OPTIONS_OR_HEAD.clone(), "/public/album")
+                    .to(empty_handler);
+
+                route
+                    .request(OPTIONS_OR_HEAD.clone(), "/public/album/:name")
                     .to(empty_handler);
 
                 route

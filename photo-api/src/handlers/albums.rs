@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use snafu::{Backtrace, ResultExt};
 
 #[derive(Deserialize, Serialize, StateData, StaticResponseExtender)]
-pub struct WithEmailExtractor {
+pub struct WithIdExtractor {
     id: String,
 }
 
@@ -23,7 +23,7 @@ pub struct PublicAlbumResponse {
 
 pub async fn get_main_public(mut state: State) -> HandlerResult {
     let repo = Repo::borrow_from(&state).clone();
-    let query_param = WithEmailExtractor::take_from(&mut state);
+    let query_param = WithIdExtractor::take_from(&mut state);
 
     let user = match users::find_by_id(repo.clone(), query_param.id)
         .await
@@ -34,6 +34,40 @@ pub async fn get_main_public(mut state: State) -> HandlerResult {
     };
 
     let response = match albums::find_main_public(repo, &user)
+        .await
+        .context(AlbumIssue)
+    {
+        Ok(album) => {
+            let response = PublicAlbumResponse { album };
+            let body = serde_json::to_string(&response).expect("Failed to serialize album");
+
+            create_response(&state, StatusCode::OK, mime::APPLICATION_JSON, body)
+        }
+        Err(e) => return Err((state, e.into())),
+    };
+
+    Ok((state, response))
+}
+
+#[derive(Deserialize, Serialize, StateData, StaticResponseExtender)]
+pub struct WithNameExtractor {
+    name: String,
+}
+
+pub async fn get_album_by_name(mut state: State) -> HandlerResult {
+    let repo = Repo::borrow_from(&state).clone();
+    let query_param = WithIdExtractor::take_from(&mut state);
+    let path_param = WithNameExtractor::take_from(&mut state);
+
+    let user = match users::find_by_id(repo.clone(), query_param.id)
+        .await
+        .context(UserIssue)
+    {
+        Ok(u) => u,
+        Err(e) => return Err((state, e.into())),
+    };
+
+    let response = match albums::find_by_name(repo, &user, path_param.name)
         .await
         .context(AlbumIssue)
     {

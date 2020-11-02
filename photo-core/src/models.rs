@@ -187,6 +187,24 @@ impl Album {
         Ok(album)
     }
 
+    pub fn find_by_name(conn: &Conn, user: &User, a_name: &str) -> Result<AlbumWithPhotos> {
+        let album: Album = {
+            use crate::schema::albums::dsl::*;
+
+            albums
+                .filter(user_id.eq(user.id))
+                .filter(name.eq(a_name))
+                .first(conn)
+                .context(Query)?
+        };
+
+        let photos = Photo::belonging_to(&album)
+            .load::<Photo>(conn)
+            .context(Query)?;
+
+        Ok((album, photos))
+    }
+
     /// Find all albums including the first picture of each album.
     pub fn find_all(conn: &Conn, user: &User) -> Result<Vec<AlbumWithPhotos>> {
         let albums: Vec<Album> = {

@@ -52,6 +52,16 @@ pub async fn find_by_id(repo: Repo, id: String) -> Result<Album> {
     .await
 }
 
+pub async fn find_by_name(repo: Repo, user: &User, name: String) -> Result<AlbumWithPhotos> {
+    let user = user.clone();
+    repo.run(move |conn| {
+        let album = Album::find_by_name(&conn, &user, &name).context(Model)?;
+
+        Ok(album)
+    })
+    .await
+}
+
 pub async fn find_all(repo: Repo, user: &User) -> Result<Vec<AlbumWithPhotos>> {
     let user = user.clone();
     repo.run(move |conn| {
