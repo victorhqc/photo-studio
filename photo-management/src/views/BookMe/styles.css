@@ -1,0 +1,25 @@
+.book_me__title {
+  @apply text-2xl mt-4 mb-6;
+}
+
+.form__input_box {
+  @apply grid grid-cols-6;
+  width: 500px;
+}
+
+.form__label {
+  @apply mr-2 mt-1;
+}
+
+.form__input {
+  @apply rounded-sm text-black p-2 col-span-5;
+}
+
+.form__btn {
+  @apply mt-6 bg-white text-black p-2 rounded cursor-pointer col-start-2;
+  min-width: 6rem;
+}
+
+.form__btn:disabled {
+  @apply cursor-not-allowed opacity-75;
+}

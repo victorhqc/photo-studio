@@ -3,7 +3,7 @@ use crate::auth::AuthUser;
 use crate::conduit::{book_me, users};
 use crate::connection::Repo;
 use gotham::handler::HandlerResult;
-use gotham::helpers::http::response::create_response;
+use gotham::helpers::http::response::{create_empty_response, create_response};
 use gotham::state::{FromState, State};
 use gotham_middleware_jwt::AuthorizationToken;
 use hyper::StatusCode;
@@ -85,6 +85,9 @@ pub async fn find_by_user(state: State) -> HandlerResult {
             let body = serde_json::to_string(&response).expect("Failed to serialize booke me info");
 
             create_response(&state, StatusCode::OK, mime::APPLICATION_JSON, body)
+        }
+        Err(AlbumHandlersError::BookMeIssue { .. }) => {
+            create_empty_response(&state, StatusCode::NOT_FOUND)
         }
         Err(e) => return Err((state, e.into())),
     };

@@ -1,6 +1,6 @@
 import { combineReducers, Reducer } from 'redux';
 import { ActionType, getType } from 'typesafe-actions';
-import { BookMe, BookMeState } from './types';
+import { BookMeState } from './types';
 import * as actions from './actions';
 
 export type BookMeAction = ActionType<typeof actions>;
