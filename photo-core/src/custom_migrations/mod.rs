@@ -51,7 +51,7 @@ fn migrate_lifestyle_album(conn: &Conn) -> Result<()> {
     users.iter().for_each(|user| {
         let album = Album::new(
             &user,
-            "Lifestyle".to_string(),
+            "lifestyle".to_string(),
             Some("Family & Lifestyle".to_string()),
         );
 
