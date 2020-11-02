@@ -59,6 +59,39 @@ pub async fn update(mut state: State) -> HandlerResult {
     Ok((state, response))
 }
 
+pub async fn find_by_user(state: State) -> HandlerResult {
+    let repo = Repo::borrow_from(&state).clone();
+
+    let token = AuthorizationToken::<AuthUser>::borrow_from(&state);
+    let email = token.0.claims.email();
+
+    let user = match users::find_by_email(repo.clone(), email)
+        .await
+        .context(UserIssue)
+    {
+        Ok(u) => u,
+        Err(e) => {
+            debug!("{:?}", e);
+            return Err((state, e.into()));
+        }
+    };
+
+    let response = match book_me::find_by_user(repo, &user)
+        .await
+        .context(BookMeIssue)
+    {
+        Ok(info) => {
+            let response = UpdateBookMeResponse { info };
+            let body = serde_json::to_string(&response).expect("Failed to serialize booke me info");
+
+            create_response(&state, StatusCode::OK, mime::APPLICATION_JSON, body)
+        }
+        Err(e) => return Err((state, e.into())),
+    };
+
+    Ok((state, response))
+}
+
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateBookMeResponse {

@@ -171,6 +171,8 @@ fn router() -> Router {
                 });
 
                 route.scope("/book_me", |route| {
+                    route.get("/").to_async(handlers::book_me::find_by_user);
+
                     route.put("/").to_async(handlers::book_me::update);
                 });
             });

@@ -434,15 +434,19 @@ impl BookMe {
         }
     }
 
-    pub fn update_or_create(conn: &Conn, book_email: &str, user: &User) -> Result<BookMe> {
-        let existing: Result<BookMe> = {
-            use crate::schema::book_me::dsl::*;
+    pub fn find_by_user(conn: &Conn, user: &User) -> Result<BookMe> {
+        use crate::schema::book_me::dsl::*;
 
-            book_me
-                .filter(user_id.eq(user.id))
-                .first(conn)
-                .context(Query)
-        };
+        let info = book_me
+            .filter(user_id.eq(user.id))
+            .first(conn)
+            .context(Query)?;
+
+        Ok(info)
+    }
+
+    pub fn update_or_create(conn: &Conn, book_email: &str, user: &User) -> Result<BookMe> {
+        let existing: Result<BookMe> = BookMe::find_by_user(conn, user);
 
         let book_me_info: BookMe = match existing {
             Ok(book_me_info) => {
