@@ -11,6 +11,14 @@ table! {
 }
 
 table! {
+    book_me (id) {
+        id -> Text,
+        user_id -> Text,
+        email -> Text,
+    }
+}
+
+table! {
     custom_migrations (id) {
         id -> Text,
         name -> Text,
@@ -44,7 +52,8 @@ table! {
     }
 }
 
+joinable!(book_me -> users (user_id));
 joinable!(photos -> albums (album_id));
 joinable!(photos -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(albums, custom_migrations, photos, users,);
+allow_tables_to_appear_in_same_query!(albums, book_me, custom_migrations, photos, users,);

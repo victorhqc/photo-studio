@@ -1,6 +1,6 @@
 use crate::connection::Conn;
 use crate::helpers::uuid::Uuid;
-use crate::schema::{albums, photos, users};
+use crate::schema::{albums, book_me, photos, users};
 use chrono::naive::serde::ts_seconds;
 use chrono::NaiveDateTime;
 use chrono::Utc;
@@ -402,6 +402,81 @@ impl Photo {
             is_favorite,
             updated_at: now,
         }
+    }
+}
+
+#[derive(
+    Serialize,
+    Deserialize,
+    Debug,
+    Clone,
+    AsChangeset,
+    Insertable,
+    Identifiable,
+    Associations,
+    Queryable,
+)]
+#[table_name = "book_me"]
+#[belongs_to(User)]
+#[serde(rename_all = "camelCase")]
+pub struct BookMe {
+    id: Uuid,
+    user_id: Uuid,
+    email: String,
+}
+
+impl BookMe {
+    pub fn new(email: String, user: &User) -> Self {
+        Self {
+            id: Uuid::new_v4(),
+            user_id: user.id,
+            email,
+        }
+    }
+
+    pub fn update_or_create(conn: &Conn, book_email: &str, user: &User) -> Result<BookMe> {
+        let existing: Result<BookMe> = {
+            use crate::schema::book_me::dsl::*;
+
+            book_me
+                .filter(user_id.eq(user.id))
+                .first(conn)
+                .context(Query)
+        };
+
+        let book_me_info: BookMe = match existing {
+            Ok(book_me_info) => {
+                use crate::schema::book_me::dsl::*;
+
+                diesel::update(book_me)
+                    .filter(id.eq(book_me_info.id))
+                    .set(email.eq(book_email))
+                    .execute(conn)
+                    .context(Query)?;
+
+                book_me
+                    .filter(id.eq(book_me_info.id))
+                    .first(conn)
+                    .context(Query)?
+            }
+            Err(_) => {
+                use crate::schema::book_me::dsl::*;
+
+                let info = BookMe::new(String::from(book_email), user);
+
+                diesel::insert_into(book_me)
+                    .values(info)
+                    .execute(conn)
+                    .context(Query)?;
+
+                book_me
+                    .filter(user_id.eq(user.id))
+                    .first(conn)
+                    .context(Query)?
+            }
+        };
+
+        Ok(book_me_info)
     }
 }
 
