@@ -2,6 +2,7 @@ import { Store } from 'redux';
 import merge from 'lodash/merge';
 import { selectToken, logout, AuthenticatedUser as User } from '../store/auth';
 import { AlbumWithPhotos, Photo } from '../store/albums';
+import { BookMe } from '../store/bookMe';
 
 export const ApiFactory = {
   Build(store: Store) {
@@ -165,6 +166,12 @@ export const ApiFactory = {
       deletePhoto: function deletePhoto({ id }: { id: string }) {
         return ApiFactory.delete(store, `/api/photo/${id}`);
       },
+      getBookMeInfo: function bookMeInfo(): Promise<{ info: BookMe }> {
+        return ApiFactory.getOrFail(store, '/api/book_me/');
+      },
+      updateBookMe: function updateBookMe({ email }: UpdateBookMeArgs): Promise<{ info: BookMe }> {
+        return ApiFactory.put(store, '/api/book_me/', { email });
+      },
     };
   },
 };
@@ -204,4 +211,8 @@ type UpdatePhotoArgs = {
   id: string;
   indexInAlbum: number;
   isFavorite: boolean;
+};
+
+type UpdateBookMeArgs = {
+  email: string;
 };
