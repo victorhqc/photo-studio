@@ -262,6 +262,13 @@ pub async fn book_me(mut state: State) -> HandlerResult {
     };
 
     debug!("Response: {:?}", res);
+    match res.status() {
+        StatusCode::OK => {}
+        code => {
+            let body = create_empty_response(&state, code);
+            return Ok((state, body));
+        }
+    }
 
     let body = create_empty_response(&state, StatusCode::OK);
 
