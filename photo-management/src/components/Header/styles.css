@@ -21,3 +21,11 @@
 .header__nav {
   @apply col-span-4 mt-2;
 }
+
+.header__nav__ul {
+  @apply flex;
+}
+
+.header__nav__ul li {
+  @apply mx-2;
+}

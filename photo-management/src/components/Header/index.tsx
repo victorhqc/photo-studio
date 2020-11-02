@@ -13,9 +13,12 @@ const Header: FC<Props> = ({ user, logout }) => (
       <p className="header__email">{user.email}</p>
     </div>
     <nav className="header__nav">
-      <ul>
+      <ul className="header__nav__ul">
         <li>
           <Link to="/">Albums</Link>
+        </li>
+        <li>
+          <Link to="/book_me">Book Me</Link>
         </li>
       </ul>
     </nav>

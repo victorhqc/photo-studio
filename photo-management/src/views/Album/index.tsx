@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, ComponentType, useEffect } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, RouteComponentProps } from 'react-router';
@@ -7,7 +7,7 @@ import { openAlbum, fetchAllAlbums, selectAlbumById, selectAlbums } from '../../
 import AlbumOpened from '../../components/AlbumOpened';
 import './styles.css';
 
-const HomeView: FC<Props> = ({ openAlbum, fetchAllAlbums, match, album, albumsLength }) => {
+const AlbumView: FC<Props> = ({ openAlbum, fetchAllAlbums, match, album, albumsLength }) => {
   const {
     params: { id },
   } = match;
@@ -54,4 +54,7 @@ type Props = ReturnType<typeof mapStateToProps> &
   typeof mapDispatchToProps &
   RouteComponentProps<{ id: string }>;
 
-export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(HomeView);
+export default compose<ComponentType>(
+  withRouter,
+  connect(mapStateToProps, mapDispatchToProps)
+)(AlbumView);

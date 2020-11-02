@@ -5,8 +5,9 @@ import { checkCredentials } from './store/auth';
 import Authentication from './components/Authentication';
 import Header from './components/Header';
 import Authenticate from './views/Authenticate';
-import Home from './views/Album';
+import Album from './views/Album';
 import Albums from './views/Albums';
+import BookMe from './views/BookMe';
 import LoginGoogle from './views/LoginGoogle';
 import './App.css';
 
@@ -29,7 +30,10 @@ function App({ checkCredentials }: Props) {
                 <Albums />
               </Route>
               <Route exact path="/album/:id">
-                <Home />
+                <Album />
+              </Route>
+              <Route exact path="/book_me">
+                <BookMe />
               </Route>
             </Switch>
           </>
