@@ -169,6 +169,10 @@ fn router() -> Router {
                         .post("/upload")
                         .to_async(handlers::photos::upload_photo);
                 });
+
+                route.scope("/book_me", |route| {
+                    route.put("/").to_async(handlers::book_me::update);
+                });
             });
 
             // CORS, need to investigate a better way to do this without repeating routes.
@@ -214,6 +218,12 @@ fn router() -> Router {
 
                     route
                         .request(OPTIONS_OR_HEAD.clone(), "/upload")
+                        .to(empty_handler);
+                });
+
+                route.scope("/book_me", |route| {
+                    route
+                        .request(OPTIONS_OR_HEAD.clone(), "/")
                         .to(empty_handler);
                 });
             });
