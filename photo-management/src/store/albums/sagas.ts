@@ -58,6 +58,10 @@ function* handleAddPhoto(action: ActionType<typeof addPhoto.request>) {
       albumId: album.id,
       src: response.photoUrl,
       mainColor: action.payload.color,
+      title: action.payload.title,
+      description: action.payload.description,
+      width: action.payload.width,
+      height: action.payload.height,
     });
     yield put(addPhoto.success(photo));
   } catch (e) {
@@ -73,6 +77,8 @@ function* handleUpdatePhoto(action: ActionType<typeof updatePhoto.request>) {
       id: action.payload.id,
       isFavorite: action.payload.isFavorite,
       indexInAlbum: 0,
+      title: action.payload.title,
+      description: action.payload.description,
     });
 
     yield put(updatePhoto.success(photo));

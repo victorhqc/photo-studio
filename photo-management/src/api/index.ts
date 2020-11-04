@@ -145,12 +145,20 @@ export const ApiFactory = {
         albumId,
         src,
         mainColor,
+        title,
+        description,
+        height,
+        width,
       }: AddPhotoArgs): Promise<{ photo: Photo }> {
         return ApiFactory.post(store, `/api/album/${albumId}/photo`, {
           indexInAlbum: 0,
           s3Id,
           src,
           mainColor,
+          title,
+          description,
+          width,
+          height,
         });
       },
       updatePhoto: function updatePhoto({
