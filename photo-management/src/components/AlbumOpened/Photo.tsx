@@ -22,6 +22,8 @@ const PhotoComponent: FC<Props> = ({
     updatePhoto({
       id,
       isFavorite: !isFavorite,
+      title: null,
+      description: null,
     });
   }, [id, isFavorite, updatePhoto]);
 

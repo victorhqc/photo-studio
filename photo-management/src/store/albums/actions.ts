@@ -23,14 +23,14 @@ export const addPhoto = createAsyncAction(
   'albums/add_photo_success',
   'albums/add_photo_error',
   'albums/add_photo_cancel'
-)<{ img: File; color: string }, Photo, Error, void>();
+)<{ img: File; color: string } & Description & Dimensions, Photo, Error, void>();
 
 export const updatePhoto = createAsyncAction(
   'albums/update_photo',
   'albums/update_photo_success',
   'albums/update_photo_error',
   'albums/update_photo_cancel'
-)<{ id: string; isFavorite: boolean }, Photo, Error, void>();
+)<{ id: string; isFavorite: boolean } & Description, Photo, Error, void>();
 
 export const deletePhoto = createAsyncAction(
   'albums/delete_photo',
@@ -40,3 +40,6 @@ export const deletePhoto = createAsyncAction(
 )<string, string, Error, void>();
 
 export const buildApplication = createAction('albums/build_app')<void>();
+
+type Description = { title: string | null; description: string | null };
+type Dimensions = { width: number; height: number };

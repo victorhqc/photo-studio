@@ -205,12 +205,18 @@ type AddPhotoArgs = {
   albumId: string;
   src: string;
   mainColor: string;
+  title: string | null;
+  description: string | null;
+  width: number;
+  height: number;
 };
 
 type UpdatePhotoArgs = {
   id: string;
   indexInAlbum: number;
   isFavorite: boolean;
+  title: string | null;
+  description: string | null;
 };
 
 type UpdateBookMeArgs = {

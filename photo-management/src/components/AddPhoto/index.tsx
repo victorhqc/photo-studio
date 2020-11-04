@@ -17,6 +17,8 @@ const AddPhoto: FC<Props> = ({ addPhoto, buildApplication, needsRebuild, status 
   const [imagePreview, setImagePreview] = useState<{
     base64: ArrayBuffer | string;
     color: string;
+    width: number;
+    height: number;
   } | null>(null);
 
   useEffect(() => {
@@ -57,7 +59,22 @@ const AddPhoto: FC<Props> = ({ addPhoto, buildApplication, needsRebuild, status 
     const fr = new FileReader();
     fr.onload = async () => {
       const color = await getColorFrom(fr.result as string);
-      setImagePreview({ base64: fr.result as string, color });
+
+      const img = new Image();
+      img.onload = function () {
+        setImagePreview({
+          base64: fr.result as string,
+          color,
+          width: img.width,
+          height: img.height,
+        });
+      };
+
+      if (fr.result && typeof fr.result === 'string') {
+        img.src = fr.result;
+      } else {
+        throw new Error('The file is not an image');
+      }
     };
 
     fr.readAsDataURL(file);
@@ -74,6 +91,10 @@ const AddPhoto: FC<Props> = ({ addPhoto, buildApplication, needsRebuild, status 
       addPhoto({
         img,
         color: imagePreview.color,
+        title: null,
+        description: null,
+        width: imagePreview.width,
+        height: imagePreview.height,
       });
     },
     [addPhoto, imagePreview]
