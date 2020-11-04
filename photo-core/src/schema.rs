@@ -35,6 +35,10 @@ table! {
         s3_id -> Text,
         src -> Text,
         main_color -> Text,
+        title -> Nullable<Text>,
+        description -> Nullable<Text>,
+        width -> Integer,
+        height -> Integer,
         is_favorite -> Bool,
         created_at -> Timestamp,
         updated_at -> Timestamp,
@@ -52,6 +56,7 @@ table! {
     }
 }
 
+joinable!(albums -> users (user_id));
 joinable!(book_me -> users (user_id));
 joinable!(photos -> albums (album_id));
 joinable!(photos -> users (user_id));

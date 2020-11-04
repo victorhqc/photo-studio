@@ -299,6 +299,10 @@ pub struct Photo {
     pub s3_id: String,
     pub src: String,
     pub main_color: String,
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub width: i32,
+    pub height: i32,
     pub is_favorite: bool,
     #[serde(with = "ts_seconds")]
     pub created_at: NaiveDateTime,
@@ -324,6 +328,10 @@ impl Photo {
         s3_id: String,
         src: String,
         main_color: String,
+        title: Option<String>,
+        description: Option<String>,
+        width: i32,
+        height: i32,
         is_favorite: bool,
     ) -> Self {
         let now = Utc::now().naive_utc();
@@ -336,6 +344,10 @@ impl Photo {
             s3_id,
             src: src.clone(),
             main_color,
+            title,
+            description,
+            width,
+            height,
             is_favorite,
             created_at: now,
             updated_at: now,

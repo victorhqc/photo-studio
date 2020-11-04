@@ -25,6 +25,10 @@ pub struct NewPhotoRequest {
     pub s3_id: String,
     pub src: String,
     pub main_color: String,
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub width: i32,
+    pub height: i32,
 }
 
 #[derive(Serialize)]
@@ -75,6 +79,10 @@ pub async fn new_photo(mut state: State) -> HandlerResult {
         req_data.s3_id,
         req_data.src,
         req_data.main_color,
+        req_data.title,
+        req_data.description,
+        req_data.width,
+        req_data.height,
         false,
     )
     .await

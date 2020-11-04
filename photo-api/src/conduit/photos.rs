@@ -10,6 +10,10 @@ pub async fn create(
     s3_id: String,
     src: String,
     main_color: String,
+    title: Option<String>,
+    description: Option<String>,
+    width: i32,
+    height: i32,
     is_favorite: bool,
 ) -> Result<Photo> {
     let album = album.clone();
@@ -22,6 +26,10 @@ pub async fn create(
             s3_id,
             src,
             main_color,
+            title,
+            description,
+            width,
+            height,
             is_favorite,
         );
         let photo = photo.insert(&conn).context(Model)?;
