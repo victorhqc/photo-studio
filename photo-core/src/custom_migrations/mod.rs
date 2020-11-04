@@ -90,13 +90,14 @@ fn migrate_image_metadata(conn: &Conn) -> Result<()> {
             photos.iter().for_each(|photo| {
                 let img_bytes = reqwest::blocking::get(&photo.src).unwrap().bytes().unwrap();
                 let image = image::load_from_memory(&img_bytes).unwrap().to_bgr();
+                let (img_width, img_height) = image.dimensions();
 
                 {
                     use crate::schema::photos::dsl::*;
 
                     let updated = UpdatePhoto {
-                        width: image.width() as i32,
-                        height: image.height() as i32,
+                        width: img_width as i32,
+                        height: img_height as i32,
                     };
 
                     debug!("Updating image dimensions {:?}", updated);
