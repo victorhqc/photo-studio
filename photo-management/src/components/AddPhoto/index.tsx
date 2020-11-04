@@ -20,11 +20,16 @@ const AddPhoto: FC<Props> = ({ addPhoto, buildApplication, needsRebuild, status 
     width: number;
     height: number;
   } | null>(null);
+  const [form, setForm] = useState<{ title: string; description: string }>({
+    title: '',
+    description: '',
+  });
 
   useEffect(() => {
     if (status === 'done' && inputRef.current) {
       inputRef.current.value = '';
       setImagePreview(null);
+      setForm({ title: '', description: '' });
     }
   }, [status]);
 
@@ -91,13 +96,13 @@ const AddPhoto: FC<Props> = ({ addPhoto, buildApplication, needsRebuild, status 
       addPhoto({
         img,
         color: imagePreview.color,
-        title: null,
-        description: null,
+        title: form.title || null,
+        description: form.description || null,
         width: imagePreview.width,
         height: imagePreview.height,
       });
     },
-    [addPhoto, imagePreview]
+    [addPhoto, imagePreview, form]
   );
 
   const handleCancel = useCallback((e: FormEvent) => {
@@ -128,11 +133,41 @@ const AddPhoto: FC<Props> = ({ addPhoto, buildApplication, needsRebuild, status 
         )}
         {imagePreview ? (
           <>
-            <div
-              className="add-photo__preview"
-              style={{ backgroundImage: `url(${imagePreview.base64})` }}
-            >
+            <div className="add-photo__preview">
+              <div
+                className="add-photo__preview-img"
+                style={{ backgroundImage: `url(${imagePreview.base64})` }}
+              />
               <div className="add-photo__confirm-info">
+                <div>
+                  <h1 className="add-photo__confirm-title">Describe the picture</h1>
+                  <div className="input__wrapper">
+                    <label className="input__label" htmlFor="name">
+                      Name
+                    </label>
+                    <input
+                      className="input input--text"
+                      id="name"
+                      name="name"
+                      type="text"
+                      value={form.title}
+                      onChange={(e) => setForm({ ...form, title: e.target.value })}
+                    />
+                  </div>
+                  <div className="input__wrapper">
+                    <label className="input__label" htmlFor="description">
+                      Description
+                    </label>
+                    <textarea
+                      className="input input--textarea"
+                      rows={4}
+                      id="description"
+                      name="description"
+                      value={form.description}
+                      onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    ></textarea>
+                  </div>
+                </div>
                 <div className="add-photo__btns-wrapper">
                   <button
                     className="add-photo__confirm-btn add-photo__confirm-btn--accept"
@@ -164,21 +199,23 @@ const AddPhoto: FC<Props> = ({ addPhoto, buildApplication, needsRebuild, status 
           className="add-photo__input"
           onChange={handleFileChange}
         />
-        <div className="add-photo__rebuild-wrapper">
-          <h2 className="add-photo__rebuild-title">
-            {needsRebuild ? 'Rebuild Website' : 'No rebuild is needed'}
-          </h2>
-          <p className="add-photo__rebuild-text">
-            {needsRebuild
-              ? 'To reflect the changes in photos, a rebuild in the website is needed.'
-              : 'No changes done in photos, so no rebuild is needed in the website.'}
-          </p>
-          {needsRebuild && (
-            <button className="add-photo__rebuild-button" onClick={handleRebuild}>
-              Rebuild Website
-            </button>
-          )}
-        </div>
+        {!imagePreview && (
+          <div className="add-photo__rebuild-wrapper">
+            <h2 className="add-photo__rebuild-title">
+              {needsRebuild ? 'Rebuild Website' : 'No rebuild is needed'}
+            </h2>
+            <p className="add-photo__rebuild-text">
+              {needsRebuild
+                ? 'To reflect the changes in photos, a rebuild in the website is needed.'
+                : 'No changes done in photos, so no rebuild is needed in the website.'}
+            </p>
+            {needsRebuild && (
+              <button className="add-photo__rebuild-button" onClick={handleRebuild}>
+                Rebuild Website
+              </button>
+            )}
+          </div>
+        )}
       </PhotoGrid>
     </form>
   );

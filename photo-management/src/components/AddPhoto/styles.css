@@ -16,28 +16,46 @@
 }
 
 .add-photo__preview {
-  @apply relative w-full bg-cover;
+  @apply w-full col-span-2 flex;
   height: 24rem;
 }
 
+.add-photo__preview-img {
+  @apply bg-cover bg-center;
+  height: 24rem;
+  width: calc(50% - 0.5rem);
+}
+
 .add-photo__confirm-info {
-  @apply w-full absolute bottom-0 left-0 mb-4;
+  @apply ml-4 w-1/2;
+}
+
+.add-photo__confirm-title {
+  @apply text-2xl mb-6;
 }
 
 .add-photo__btns-wrapper {
   @apply grid grid-cols-4;
 }
 
+.add-photo__confirm-btn--accept {
+  @apply col-start-2;
+}
+
 .add-photo__confirm-btn {
-  @apply px-2 py-1 w-24 bg-gray-300 border-gray-500 text-gray-900 rounded-sm cursor-pointer;
+  @apply px-2 py-1 mr-2 mt-4 w-24 bg-gray-300 border-gray-500 text-gray-900 rounded-sm cursor-pointer;
 }
 
 .add-photo__confirm-btn:disabled {
   @apply cursor-not-allowed;
 }
 
-.add-photo__confirm-btn--accept {
-  @apply col-start-3;
+.input__wrapper {
+  @apply mt-2 grid grid-cols-4 gap-2;
+}
+
+.input {
+  @apply text-black col-span-3;
 }
 
 .rotate-infinite {
@@ -54,8 +72,8 @@
 }
 
 .loading {
-  @apply absolute z-10;
-  transform: translate3d(12rem, 10rem, 0);
+  @apply absolute;
+  transform: translate3d(10rem, 10rem, 0);
 }
 
 .add-photo__rebuild-title {
@@ -64,8 +82,4 @@
 
 .add-photo__rebuild-text {
   @apply text-xl;
-}
-
-.add-photo__rebuild-button {
-  @apply bg-white text-black p-2 mt-10 rounded;
 }
