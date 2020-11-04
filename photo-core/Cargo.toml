@@ -1,6 +1,6 @@
 [package]
 name = "photo-core"
-version = "0.5.0"
+version = "0.6.0"
 authors = ["Victor Quiroz <victorhqc@gmail.com>"]
 edition = "2018"
 
