@@ -316,6 +316,8 @@ pub struct Photo {
 struct UpdatePhoto {
     pub index_in_album: i32,
     pub is_favorite: bool,
+    pub title: Option<String>,
+    pub description: Option<String>,
     #[serde(with = "ts_seconds")]
     pub updated_at: NaiveDateTime,
 }
@@ -370,8 +372,15 @@ impl Photo {
         Ok(photo)
     }
 
-    pub fn update(&self, conn: &Conn, index_in_album: i32, is_favorite: bool) -> Result<Photo> {
-        let updated = self.prepare_update(index_in_album, is_favorite);
+    pub fn update(
+        &self,
+        conn: &Conn,
+        index_in_album: i32,
+        is_favorite: bool,
+        title: Option<String>,
+        description: Option<String>,
+    ) -> Result<Photo> {
+        let updated = self.prepare_update(index_in_album, is_favorite, title, description);
         let photo: Photo = {
             use crate::schema::photos::dsl::*;
 
@@ -406,12 +415,20 @@ impl Photo {
         Ok(photo)
     }
 
-    fn prepare_update(&self, index_in_album: i32, is_favorite: bool) -> UpdatePhoto {
+    fn prepare_update(
+        &self,
+        index_in_album: i32,
+        is_favorite: bool,
+        title: Option<String>,
+        description: Option<String>,
+    ) -> UpdatePhoto {
         let now = Utc::now().naive_utc();
 
         UpdatePhoto {
             index_in_album,
             is_favorite,
+            title,
+            description,
             updated_at: now,
         }
     }

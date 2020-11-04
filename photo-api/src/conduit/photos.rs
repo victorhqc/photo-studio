@@ -44,11 +44,13 @@ pub async fn update(
     photo: &Photo,
     index_in_album: i32,
     is_favorite: bool,
+    title: Option<String>,
+    description: Option<String>,
 ) -> Result<Photo> {
     let photo = photo.clone();
     repo.run(move |conn| {
         let photo = photo
-            .update(&conn, index_in_album, is_favorite)
+            .update(&conn, index_in_album, is_favorite, title, description)
             .context(Model)?;
 
         Ok(photo)

@@ -113,6 +113,8 @@ pub struct PhotoPathExtractor {
 pub struct UpdatePhotoRequest {
     pub index_in_album: i32,
     pub is_favorite: bool,
+    pub title: Option<String>,
+    pub description: Option<String>,
 }
 
 pub async fn update_photo(mut state: State) -> HandlerResult {
@@ -131,9 +133,16 @@ pub async fn update_photo(mut state: State) -> HandlerResult {
         Err(e) => return Err((state, e.into())),
     };
 
-    let response = match photos::update(repo, &photo, req_data.index_in_album, req_data.is_favorite)
-        .await
-        .context(PhotoIssue)
+    let response = match photos::update(
+        repo,
+        &photo,
+        req_data.index_in_album,
+        req_data.is_favorite,
+        req_data.title,
+        req_data.description,
+    )
+    .await
+    .context(PhotoIssue)
     {
         Ok(photo) => {
             let response = PhotoResponse { photo };
