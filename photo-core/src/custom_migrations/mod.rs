@@ -112,6 +112,8 @@ fn migrate_image_metadata(conn: &Conn) -> Result<()> {
         });
     });
 
+    let migration = CustomMigration::new("image_metadata".to_string());
+    migration.insert(&conn)?;
     debug!("Migration ended!");
 
     Ok(())
