@@ -7,6 +7,7 @@ use chrono::naive::serde::ts_seconds;
 use chrono::NaiveDateTime;
 use chrono::Utc;
 use diesel::prelude::*;
+use image::GenericImageView;
 use serde::{Deserialize, Serialize};
 use snafu::{Backtrace, ResultExt};
 
@@ -19,9 +20,9 @@ lazy_static! {
 }
 
 pub fn apply_custom_migrations(url: Option<String>) -> Result<()> {
-    let conn = connect(url).expect("Could not get connection");
+    let mut conn = connect(url).expect("Could not get connection");
 
-    let applied_migrations = CustomMigration::get_all(&conn)?;
+    let applied_migrations = CustomMigration::get_all(&mut conn)?;
 
     let to_apply: Vec<String> = MIGRATIONS
         .iter()
@@ -40,8 +41,8 @@ pub fn apply_custom_migrations(url: Option<String>) -> Result<()> {
 
     to_apply.iter().for_each(|name| {
         match &name[..] {
-            "lifestyle_album" => migrate_lifestyle_album(&conn).unwrap(),
-            "image_metadata" => migrate_image_metadata(&conn).unwrap(),
+            "lifestyle_album" => migrate_lifestyle_album(&mut conn).unwrap(),
+            "image_metadata" => migrate_image_metadata(&mut conn).unwrap(),
             _ => {}
         };
     });
@@ -49,10 +50,10 @@ pub fn apply_custom_migrations(url: Option<String>) -> Result<()> {
     Ok(())
 }
 
-fn migrate_lifestyle_album(conn: &Conn) -> Result<()> {
+fn migrate_lifestyle_album(conn: &mut Conn) -> Result<()> {
     debug!("Migrating lifestyle_album");
 
-    let users = User::find_all(&conn).context(Model)?;
+    let users = User::find_all(conn).context(ModelSnafu)?;
 
     users.iter().for_each(|user| {
         let album = Album::new(
@@ -61,26 +62,26 @@ fn migrate_lifestyle_album(conn: &Conn) -> Result<()> {
             Some("Family & Lifestyle".to_string()),
         );
 
-        album.insert(&conn).unwrap();
+        album.insert(conn).unwrap();
     });
 
     let migration = CustomMigration::new("lifestyle_album".to_string());
-    migration.insert(&conn)?;
+    migration.insert(conn)?;
 
     Ok(())
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, AsChangeset)]
-#[table_name = "photos"]
+#[diesel(table_name = photos)]
 struct UpdatePhoto {
     pub width: i32,
     pub height: i32,
 }
 
-fn migrate_image_metadata(conn: &Conn) -> Result<()> {
+fn migrate_image_metadata(conn: &mut Conn) -> Result<()> {
     debug!("Migrating image_metadata");
 
-    let users = User::find_all(&conn).context(Model)?;
+    let users = User::find_all(conn).context(ModelSnafu)?;
 
     users.iter().for_each(|user| {
         let albums = Album::find_all(conn, &user).unwrap();
@@ -89,7 +90,7 @@ fn migrate_image_metadata(conn: &Conn) -> Result<()> {
 
             photos.iter().for_each(|photo| {
                 let img_bytes = reqwest::blocking::get(&photo.src).unwrap().bytes().unwrap();
-                let image = image::load_from_memory(&img_bytes).unwrap().to_bgr();
+                let image = image::load_from_memory(&img_bytes).unwrap();
                 let (img_width, img_height) = image.dimensions();
 
                 {
@@ -113,24 +114,14 @@ fn migrate_image_metadata(conn: &Conn) -> Result<()> {
     });
 
     let migration = CustomMigration::new("image_metadata".to_string());
-    migration.insert(&conn)?;
+    migration.insert(conn)?;
     debug!("Migration ended!");
 
     Ok(())
 }
 
-#[derive(
-    Debug,
-    PartialEq,
-    Clone,
-    Insertable,
-    Identifiable,
-    Associations,
-    Queryable,
-    Serialize,
-    Deserialize,
-)]
-#[table_name = "custom_migrations"]
+#[derive(Debug, PartialEq, Clone, Insertable, Identifiable, Queryable, Serialize, Deserialize)]
+#[diesel(table_name = custom_migrations)]
 #[serde(rename_all = "camelCase")]
 pub struct CustomMigration {
     pub id: Uuid,
@@ -150,27 +141,27 @@ impl CustomMigration {
         }
     }
 
-    pub fn insert(&self, conn: &Conn) -> Result<CustomMigration> {
+    pub fn insert(&self, conn: &mut Conn) -> Result<CustomMigration> {
         let migration: CustomMigration = {
             use crate::schema::custom_migrations::dsl::*;
 
             diesel::insert_into(custom_migrations)
                 .values(self)
                 .execute(conn)
-                .context(Query)?;
+                .context(QuerySnafu)?;
 
             custom_migrations
                 .order(created_at.desc())
                 .first(conn)
-                .context(Query)?
+                .context(QuerySnafu)?
         };
 
         Ok(migration)
     }
 
-    pub fn get_all(conn: &Conn) -> Result<Vec<CustomMigration>> {
+    pub fn get_all(conn: &mut Conn) -> Result<Vec<CustomMigration>> {
         let migrations: Vec<CustomMigration> =
-            custom_migrations::table.load(conn).context(Query)?;
+            custom_migrations::table.load(conn).context(QuerySnafu)?;
 
         Ok(migrations)
     }

@@ -1,6 +1,6 @@
 [workspace]
 
 members = [
-  "photo-api",
+  # "photo-api",
   "photo-core"
 ]

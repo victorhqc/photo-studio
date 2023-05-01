@@ -2,31 +2,31 @@
 name = "photo-core"
 version = "0.6.0"
 authors = ["Victor Quiroz <victorhqc@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
 chrono = { version = "0.4", features = ["serde"]}
-diesel = { version = "1.4", features = ["sqlite", "r2d2", "chrono", "extras"] }
-diesel_migrations = "1.4"
+diesel = { version = "2.0", features = ["sqlite", "r2d2", "chrono", "extras"] }
+diesel_migrations = "2.0"
 dotenv = "0.15"
-futures = "0.1"
+futures = "0.3"
 http = "0.2.1"
-hyper = "0.13.7"
+hyper = "0.14"
 # Remove after 0.6.0 release.
-image = "0.23.11"
+image = "0.24.6"
 lazy_static = "1.4"
 log = "0.4"
 pretty_env_logger = "0.4"
 r2d2 = "0.8"
 # Remove after 0.6.0 release.
-reqwest = { version = "0.10" }
+reqwest = { version = "0.11", features = ["blocking", "json"] }
 serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
-snafu = { version = "0.6.9", features = ["backtraces", "futures" ] }
-snafu-derive = "0.6.9"
-uuid = { version = "0.8", features = ["serde", "v4"] }
+snafu = { version = "0.7" }
+snafu-derive = "0.7"
+uuid = { version = "1.3", features = ["serde", "v4"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 openssl = "*"
