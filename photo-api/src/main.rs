@@ -60,9 +60,9 @@ fn main() {
     pretty_env_logger::init();
 
     let url = get_database_url(None);
-    let conn = connect(Some(url.clone())).unwrap();
+    let mut conn = connect(Some(url.clone())).unwrap();
     info!("Running migrations");
-    db_migrate(&conn).unwrap();
+    db_migrate(&mut conn).unwrap();
 
     info!("Running custom migrations");
     apply_custom_migrations(Some(url)).unwrap();

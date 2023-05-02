@@ -5,40 +5,40 @@ authors = ["Victor Quiroz <victorhqc@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-bytes = "0.5"
+bytes = "1.4"
 dotenv = "0.15"
 failure = "0.1.8"
 futures = "0.3.5"
-gotham = "0.5"
-gotham_derive = "0.5"
-gotham_middleware_diesel = "0.2"
-gotham_middleware_jwt = "0.5"
+gotham = "0.7"
+gotham_derive = "0.7"
+gotham_middleware_diesel = "0.5"
+gotham_middleware_jwt = "0.8"
 http = "0.2.1"
-hyper = "0.13.7"
-hyper-tls = { version = "0.4.3", features = ["vendored"] }
-jsonwebtoken = "7.2"
+hyper = "0.14"
+hyper-tls = { version = "0.5", features = ["vendored"] }
+jsonwebtoken = "8.3"
 lazy_static = "1.4"
-libsqlite3-sys = { version = ">=0.8.0, <0.19.0", features = ["bundled"] }
+libsqlite3-sys = { version = "0.26", features = ["bundled"] }
 log = "0.4"
 pretty_env_logger = "0.4"
 mime = "0.3.16"
-multipart = { version = "0.17", default-features = false, features = ["server"] }
-oauth2 = { version = "3.0.0", features = ["reqwest-010", "futures-03"] }
+multipart = { version = "0.18", default-features = false, features = ["server"] }
+oauth2 = { version = "4.3", features = ["reqwest"] }
 photo-core = { path = "../photo-core" }
-snafu = { version = "0.6.9", features = ["backtraces", "futures" ] }
-snafu-derive = "0.6.9"
+snafu = { version = "0.7", features = ["backtraces", "futures" ] }
+snafu-derive = "0.7"
 r2d2 = "0.8"
-reqwest = { version = "0.10", features = ["json"] }
-rusoto_credential = "0.45.0"
-rusoto_core = "0.45.0"
-rusoto_s3 = { version = "0.45.0" }
+reqwest = { version = "0.11", features = ["json"] }
+rusoto_credential = "0.48"
+rusoto_core = "0.48"
+rusoto_s3 = { version = "0.48" }
 thiserror = "1.0.0"
-tokio = "0.2.22"
+tokio = "1.28"
 tokio-threadpool = "0.1.18"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 url = "2.1"
-uuid = { version = "0.8", features = ["serde", "v4"] }
+uuid = { version = "1.3", features = ["serde", "v4"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 openssl = { version = "0.10", features = ["vendored"] }
